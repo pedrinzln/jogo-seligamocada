@@ -14,7 +14,7 @@ O jogo funciona diretamente pelo navegador.
 
 Você pode acessar a versão online através do **GitHub Pages**:
 
-👉 [Jogar Se Liga, Moça!](COLOQUE_AQUI_O_LINK_DO_GITHUB_PAGES)
+👉 [Jogar Se Liga, Moça!](https://pedrinzln.github.io/jogo-seligamocada/)
 
 ## 🧩 Funcionalidades
 
