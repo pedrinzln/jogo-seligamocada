@@ -1929,7 +1929,7 @@ function finishQuiz() {
 
 
             <h4>
-                Você não está sozinho.
+                Você não está sozinha.
             </h4>
 
 
