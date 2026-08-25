@@ -1,12 +1,19 @@
+/* =========================================================
+   RESET
+========================================================= */
+
 * {
     box-sizing: border-box;
 }
 
+html,
+body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+}
 
 body {
-
-    margin: 0;
-
     min-height: 100vh;
 
     font-family:
@@ -19,21 +26,18 @@ body {
         sans-serif;
 
     background: #111827;
-
     color: #f3f4f6;
 
     overflow: hidden;
 }
 
 
-/* =========================================
+/* =========================================================
    APLICAÇÃO
-========================================= */
+========================================================= */
 
 .app-container {
-
     width: 100%;
-
     height: 100vh;
 
     display: flex;
@@ -42,55 +46,172 @@ body {
 }
 
 
-/* =========================================
+/* =========================================================
    SIDEBAR
-========================================= */
+========================================================= */
 
 .sidebar {
-
     width: 340px;
+    flex-shrink: 0;
 
     border-right: 1px solid #272d3a;
 
     background: #151922;
 
     display: flex;
-
     flex-direction: column;
 }
 
 
+/* =========================================================
+   CABEÇALHO SIDEBAR
+========================================================= */
+
 .sidebar-header {
+    width: 100%;
 
-    height: 72px;
-
-    padding: 0 20px;
+    padding: 16px 20px 14px;
 
     display: flex;
+    flex-direction: column;
 
-    align-items: center;
-
-    justify-content: space-between;
+    border-bottom: 1px solid #272d3a;
 }
 
 
-.sidebar-header h1 {
+/* =========================================================
+   PERFIL CAROL
+========================================================= */
 
+.player-profile {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    margin-bottom: 18px;
+    padding: 10px 12px;
+
+    background: linear-gradient(
+        135deg,
+        #f8f7ff,
+        #ffffff
+    );
+
+    border: 1px solid #ecebff;
+    border-radius: 14px;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.player-profile-avatar {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #6366f1,
+        #818cf8
+    );
+
+    color: white;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    box-shadow:
+        0 4px 10px rgba(99, 102, 241, 0.25);
+}
+
+.player-profile-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.player-profile-info strong {
+    color: #1f2937;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.player-profile-info span {
+    color: #9ca3af;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   TÍTULO SIDEBAR
+========================================================= */
+
+.sidebar-title {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-title h1 {
     margin: 0;
 
-    font-size: 24px;
+    color: #f3f4f6;
 
+    font-size: 24px;
     font-weight: 700;
 }
 
 
-/* =========================================
+/* =========================================================
+   BOTÕES DE ÍCONE
+========================================================= */
+
+.icon-button {
+    width: 40px;
+    height: 40px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #9ca3af;
+
+    font-size: 19px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.icon-button:hover {
+    background: #252b36;
+    color: white;
+}
+
+
+/* =========================================================
    PESQUISA
-========================================= */
+========================================================= */
 
 .search-box {
-
-    margin: 0 16px 12px;
+    margin: 14px 16px 12px;
 
     height: 42px;
 
@@ -99,7 +220,6 @@ body {
     background: #202532;
 
     display: flex;
-
     align-items: center;
 
     padding: 0 14px;
@@ -107,39 +227,39 @@ body {
     color: #9ca3af;
 }
 
-
 .search-box i {
-
     margin-right: 10px;
 }
 
-
 .search-box input {
+    width: 100%;
 
     border: none;
-
     outline: none;
 
     background: transparent;
 
-    width: 100%;
-
     color: white;
+
+    font-size: 13px;
+}
+
+.search-box input::placeholder {
+    color: #6b7280;
 }
 
 
-/* =========================================
-   CONVERSAS
-========================================= */
+/* =========================================================
+   LISTA DE CONVERSAS
+========================================================= */
 
 .conversation-list {
+    flex: 1;
 
     overflow-y: auto;
 }
 
-
 .conversation {
-
     display: flex;
 
     gap: 12px;
@@ -148,86 +268,76 @@ body {
 
     cursor: pointer;
 
-    transition: .2s;
+    transition: 0.2s ease;
 }
 
-
 .conversation:hover {
-
     background: #1e2430;
 }
 
-
 .conversation.active {
-
     background: #252b3a;
 }
 
 
+/* =========================================================
+   AVATARES
+========================================================= */
+
 .avatar {
-
     width: 48px;
-
     height: 48px;
 
     flex-shrink: 0;
 
     border-radius: 50%;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     background: #6366f1;
 
     color: white;
 
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
     font-size: 18px;
-
     font-weight: 600;
 }
 
+.avatar-lucas {
+    background: #6366f1;
+}
 
 .avatar-friend {
-
     background: #10b981;
 }
 
 
+/* =========================================================
+   CONVERSA
+========================================================= */
+
 .conversation-info {
-
     flex: 1;
-
     min-width: 0;
 }
 
-
 .conversation-top {
-
     display: flex;
-
     justify-content: space-between;
 
     margin-bottom: 4px;
 }
 
-
 .conversation-top strong {
-
     font-size: 15px;
 }
 
-
 .conversation-top small {
-
     color: #6b7280;
 }
 
-
 .conversation-info p {
-
     margin: 0;
 
     color: #9ca3af;
@@ -235,34 +345,33 @@ body {
     font-size: 13px;
 
     white-space: nowrap;
-
     overflow: hidden;
-
     text-overflow: ellipsis;
 }
 
 
-/* =========================================
+/* =========================================================
    CHAT
-========================================= */
+========================================================= */
 
 .chat-container {
-
     flex: 1;
-
     min-width: 0;
 
     display: flex;
-
     flex-direction: column;
 
     background: #111827;
 }
 
 
-.chat-header {
+/* =========================================================
+   CABEÇALHO CHAT
+========================================================= */
 
+.chat-header {
     height: 72px;
+    flex-shrink: 0;
 
     padding: 0 22px;
 
@@ -271,87 +380,43 @@ body {
     border-bottom: 1px solid #272d3a;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 }
 
+.player-name {
+    display: none;
+}
 
 .chat-user {
-
     display: flex;
-
     align-items: center;
 
     gap: 12px;
 }
 
-
 .chat-user h2 {
-
     margin: 0;
 
     font-size: 16px;
 }
 
-
 .chat-user span {
-
     font-size: 12px;
-
     color: #22c55e;
 }
 
-
 .chat-actions {
-
     display: flex;
-
     gap: 4px;
 }
 
 
-/* =========================================
-   BOTÕES
-========================================= */
-
-.icon-button {
-
-    width: 40px;
-
-    height: 40px;
-
-    border: none;
-
-    background: transparent;
-
-    border-radius: 50%;
-
-    font-size: 19px;
-
-    color: #9ca3af;
-
-    cursor: pointer;
-
-    transition: .2s;
-}
-
-
-.icon-button:hover {
-
-    background: #252b36;
-
-    color: white;
-}
-
-
-/* =========================================
+/* =========================================================
    MENSAGENS
-========================================= */
+========================================================= */
 
 .messages {
-
     flex: 1;
 
     overflow-y: auto;
@@ -359,25 +424,21 @@ body {
     padding: 30px 8%;
 
     display: flex;
-
     flex-direction: column;
 
     gap: 8px;
+
+    scroll-behavior: smooth;
 }
 
-
 .date-divider {
-
     display: flex;
-
     justify-content: center;
 
     margin-bottom: 15px;
 }
 
-
 .date-divider span {
-
     padding: 5px 12px;
 
     border-radius: 20px;
@@ -390,28 +451,27 @@ body {
 }
 
 
+/* =========================================================
+   MENSAGENS INDIVIDUAIS
+========================================================= */
+
 .message {
+    width: 100%;
 
     display: flex;
 
-    width: 100%;
+    animation: messageAppear 0.25s ease;
 }
 
-
 .message.received {
-
     justify-content: flex-start;
 }
 
-
 .message.sent {
-
     justify-content: flex-end;
 }
 
-
 .bubble {
-
     max-width: 65%;
 
     padding: 9px 12px 6px;
@@ -419,40 +479,31 @@ body {
     border-radius: 15px;
 
     box-shadow:
-        0 1px 2px rgba(0,0,0,.25);
+        0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
-
 .received .bubble {
-
     background: #252b36;
 
     border-top-left-radius: 4px;
 }
 
-
 .sent .bubble {
-
     background: #6366f1;
 
     border-top-right-radius: 4px;
 }
 
-
 .bubble p {
-
     margin: 0;
 
     padding-right: 45px;
 
     font-size: 14px;
-
     line-height: 1.4;
 }
 
-
 .message-time {
-
     display: block;
 
     text-align: right;
@@ -461,26 +512,36 @@ body {
 
     font-size: 10px;
 
-    opacity: .6;
+    opacity: 0.6;
 }
 
 
-/* =========================================
+/* =========================================================
    ESCOLHAS
-========================================= */
+========================================================= */
 
-.choices {
+.chat-bottom {
+    width: 100%;
+    flex-shrink: 0;
 
-    padding: 12px 8% 10px;
+    display: flex;
+    flex-direction: column;
 
     background: #181d27;
+
+    position: relative;
+    z-index: 10;
+}
+
+.choices {
+    width: 100%;
+
+    padding: 12px 8% 10px;
 
     border-top: 1px solid #272d3a;
 }
 
-
 .choices-title {
-
     margin: 0 0 8px;
 
     text-align: center;
@@ -491,12 +552,10 @@ body {
 
     text-transform: uppercase;
 
-    letter-spacing: .05em;
+    letter-spacing: 0.05em;
 }
 
-
 .choice-button {
-
     width: 100%;
 
     margin-bottom: 7px;
@@ -512,42 +571,34 @@ body {
     color: #e5e7eb;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     font-size: 13px;
 
     cursor: pointer;
 
-    transition: .2s;
+    transition: 0.2s ease;
 }
 
-
 .choice-button:hover {
-
     background: #2b3040;
 
     border-color: #6366f1;
 }
 
-
-.choice-button:disabled {
-
-    cursor: default;
-
-    opacity: .5;
+.choice-button:last-child {
+    margin-bottom: 0;
 }
 
 
-/* =========================================
-   INPUT
-========================================= */
+/* =========================================================
+   INPUT FICTÍCIO
+========================================================= */
 
 .message-input-area {
-
     height: 62px;
+    flex-shrink: 0;
 
     padding: 10px 16px;
 
@@ -556,15 +607,12 @@ body {
     border-top: 1px solid #272d3a;
 
     display: flex;
-
     align-items: center;
 
     gap: 10px;
 }
 
-
 .fake-input {
-
     flex: 1;
 
     height: 40px;
@@ -578,18 +626,16 @@ body {
     color: #6b7280;
 
     display: flex;
-
     align-items: center;
 
     font-size: 13px;
 }
 
-
 .input-icon {
-
     width: 38px;
-
     height: 38px;
+
+    flex-shrink: 0;
 
     border: none;
 
@@ -601,179 +647,77 @@ body {
 }
 
 
-/* =========================================
-   FINAL
-========================================= */
+/* =========================================================
+   DIÁLOGO FINALIZADO
+========================================================= */
 
-.final-message {
-
+.dialogue-finished {
     width: 100%;
+    max-width: 520px;
 
-    max-width: 650px;
+    margin: 30px auto;
 
-    margin: auto;
+    padding: 32px 28px;
 
-    padding: 30px;
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 18px;
 
     text-align: center;
 
-    animation: finalAppear .5s ease;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.06);
+
+    animation: dialogueFinishedIn 0.35s ease;
 }
 
+.dialogue-finished-icon {
+    width: 58px;
+    height: 58px;
 
-.final-message h3 {
-
-    margin-bottom: 20px;
-
-    font-size: 26px;
-}
-
-
-.final-message p {
-
-    line-height: 1.6;
-
-    font-size: 15px;
-
-    color: #cbd5e1;
-}
-
-
-/* =========================================
-   QUIZ
-========================================= */
-
-.quiz-container {
-
-    width: 100%;
-
-    max-width: 700px;
-
-    margin: auto;
-
-    padding: 35px;
-
-    text-align: center;
-}
-
-
-.quiz-number {
-
-    color: #818cf8;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-    text-transform: uppercase;
-
-    margin-bottom: 15px;
-}
-
-
-.quiz-question {
-
-    font-size: 23px;
-
-    line-height: 1.5;
-
-    font-weight: 600;
-
-    margin-bottom: 30px;
-}
-
-
-.quiz-buttons {
+    margin: 0 auto 18px;
 
     display: flex;
-
-    gap: 15px;
-
+    align-items: center;
     justify-content: center;
+
+    border-radius: 50%;
+
+    background: #dcfce7;
+
+    color: #16a34a;
+
+    font-size: 28px;
 }
 
+.dialogue-finished h3 {
+    margin: 0 0 12px;
 
-.quiz-answer {
+    color: #111827;
 
-    flex: 1;
-
-    padding: 15px;
-
-    border-radius: 12px;
-
-    border: 1px solid #343b49;
-
-    background: #202532;
-
-    color: white;
-
-    font-size: 15px;
-
-    cursor: pointer;
-
-    transition: .2s;
+    font-size: 20px;
 }
 
+.dialogue-finished p {
+    margin: 8px 0;
 
-.quiz-answer:hover {
+    color: #6b7280;
 
-    transform: translateY(-2px);
-
-    border-color: #6366f1;
-
-    background: #2b3040;
-}
-
-
-/* =========================================
-   RESULTADO DO QUIZ
-========================================= */
-
-.quiz-result {
-
-    margin-top: 25px;
-
-    padding: 20px;
-
-    border-radius: 15px;
-
-    background: #202532;
-
-    animation: resultAppear .4s ease;
-}
-
-
-.quiz-result.correct {
-
-    border: 1px solid #22c55e;
-}
-
-
-.quiz-result.wrong {
-
-    border: 1px solid #ef4444;
-}
-
-
-.quiz-result h3 {
-
-    margin-bottom: 10px;
-}
-
-
-.quiz-result p {
-
-    color: #cbd5e1;
+    font-size: 14px;
 
     line-height: 1.6;
 }
 
+.dialogue-finished strong {
+    color: #374151;
+}
 
-.next-question {
+.dialogue-finished button {
+    margin-top: 22px;
 
-    margin-top: 15px;
-
-    padding: 10px 20px;
+    padding: 12px 20px;
 
     border: none;
 
@@ -783,18 +727,189 @@ body {
 
     color: white;
 
+    font-size: 14px;
+
+    font-weight: 600;
+
     cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.dialogue-finished button:hover {
+    background: #4f46e5;
+
+    transform: translateY(-1px);
+}
+
+.go-to-ana {
+    background: #10b981 !important;
+}
+
+.go-to-ana:hover {
+    background: #059669 !important;
+}
+
+.go-to-quiz {
+    background: #6366f1 !important;
 }
 
 
-/* =========================================
+/* =========================================================
+   QUIZ
+========================================================= */
+
+.quiz-container {
+    width: 560px;
+    max-width: 90%;
+    margin: auto;
+    padding: 34px 35px;
+    background: #191e29;
+    border: 1px solid #252c3a;
+    border-radius: 20px;
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    color: white;
+}
+
+.quiz-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(99, 102, 241, 0.12);
+    color: #818cf8;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+.quiz-title {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.quiz-counter {
+    margin-top: 5px;
+    margin-bottom: 25px;
+    font-size: 12px;
+    color: #737b8c;
+}
+
+.quiz-progress {
+    width: 100%;
+    height: 6px;
+    margin-bottom: 25px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #252b36;
+}
+
+.quiz-progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    background: #6366f1;
+    transition: width 0.4s ease;
+}
+
+.quiz-phrase {
+    min-height: 95px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    background: #202634;
+    border: 1px solid #293142;
+    border-radius: 14px;
+    color: #f1f3f7;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+.quiz-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.quiz-answer {
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 11px;
+    border: 1px solid #303849;
+    background: #202634;
+    color: #dce1e9;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.quiz-answer:hover {
+    background: #272e3d;
+    border-color: #6366f1;
+    transform: translateY(-1px);
+}
+
+.quiz-answer:disabled {
+    cursor: default;
+    opacity: 0.6;
+    transform: none;
+}
+
+.quiz-result {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 14px;
+    background: #202532;
+    text-align: left;
+    animation: resultAppear 0.3s ease;
+}
+
+.quiz-result.correct {
+    border: 1px solid #22c55e;
+}
+
+.quiz-result.wrong {
+    border: 1px solid #ef4444;
+}
+
+.quiz-result h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.quiz-result p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.next-question {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #6366f1;
+    color: white;
+    cursor: pointer;
+}
+
+/* =========================================================
    RESULTADO FINAL
-========================================= */
+========================================================= */
 
 .score-card {
-
     width: 100%;
-
     max-width: 550px;
 
     margin: auto;
@@ -810,20 +925,16 @@ body {
     border-radius: 22px;
 
     box-shadow:
-        0 20px 60px rgba(0,0,0,.3);
+        0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-
 .score-card h2 {
-
     font-size: 28px;
 
     margin-bottom: 15px;
 }
 
-
 .score-number {
-
     font-size: 48px;
 
     font-weight: 800;
@@ -833,17 +944,13 @@ body {
     margin: 15px 0;
 }
 
-
 .score-card p {
-
     color: #cbd5e1;
 
     line-height: 1.6;
 }
 
-
 .restart-quiz {
-
     margin-top: 20px;
 
     padding: 12px 22px;
@@ -860,730 +967,11 @@ body {
 }
 
 
-/* =========================================
-   CONFETES
-========================================= */
-
-.confetti-container {
-
-    position: fixed;
-
-    inset: 0;
-
-    pointer-events: none;
-
-    overflow: hidden;
-
-    z-index: 9999;
-}
-
-
-.confetti {
-
-    position: absolute;
-
-    width: 8px;
-
-    height: 14px;
-
-    top: -20px;
-
-    animation:
-        confettiFall linear forwards;
-}
-
-
-@keyframes confettiFall {
-
-    to {
-
-        transform:
-            translateY(110vh)
-            rotate(720deg);
-
-        opacity: 0;
-    }
-}
-
-
-@keyframes finalAppear {
-
-    from {
-
-        opacity: 0;
-
-        transform: translateY(15px);
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform: translateY(0);
-    }
-}
-
-
-@keyframes resultAppear {
-
-    from {
-
-        opacity: 0;
-
-        transform: scale(.96);
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform: scale(1);
-    }
-}
-
-
-/* =========================================
-   RESPONSIVO
-========================================= */
-
-@media(max-width:768px) {
-
-    .sidebar {
-
-        display: none;
-    }
-
-    .messages {
-
-        padding: 25px 15px;
-    }
-
-    .choices {
-
-        padding: 12px 15px;
-    }
-
-    .bubble {
-
-        max-width: 80%;
-    }
-
-    .quiz-container {
-
-        padding: 20px;
-    }
-
-    .quiz-buttons {
-
-        flex-direction: column;
-    }
-
-}
-
-/* =========================================
-   MENSAGEM DE DIÁLOGO FINALIZADO
-========================================= */
-
-.dialog-finished-message {
-    margin: 20px auto;
-    max-width: 500px;
-
-    padding: 16px 20px;
-
-    text-align: center;
-
-    border-radius: 14px;
-
-    background: #202532;
-
-    border: 1px solid #343b49;
-
-    color: #e5e7eb;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 6px;
-
-    animation: dialogFinishedIn 0.4s ease;
-}
-
-.dialog-finished-message strong {
-    font-size: 14px;
-    color: #f9fafb;
-}
-
-.dialog-finished-message span {
-    font-size: 12px;
-    color: #9ca3af;
-}
-
-
-/* =========================================
-   INFORMAÇÃO SOBRE A OUTRA CONVERSA
-========================================= */
-
-.dialog-next-info {
-    text-align: center;
-
-    padding: 10px;
-
-    color: #9ca3af;
-
-    font-size: 12px;
-
-    line-height: 1.5;
-}
-
-
-/* =========================================
-   ANIMAÇÃO
-========================================= */
-
-@keyframes dialogFinishedIn {
-
-    from {
-
-        opacity: 0;
-
-        transform:
-            translateY(10px);
-
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform:
-            translateY(0);
-
-    }
-
-}
-
-/* =========================================
-   TELA INICIAL
-========================================= */
-
-#start-screen {
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 10000;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    padding: 25px;
-
-    background: #111827;
-
-}
-
-
-.start-card {
-
-    width: 100%;
-
-    max-width: 520px;
-
-    padding: 45px 40px;
-
-    text-align: center;
-
-    background: #181d27;
-
-    border: 1px solid #272d3a;
-
-    border-radius: 24px;
-
-    box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.35);
-
-}
-
-
-.start-icon {
-
-    width: 75px;
-
-    height: 75px;
-
-    margin: 0 auto 22px;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    background: #252b3a;
-
-    color: #818cf8;
-
-    font-size: 32px;
-
-}
-
-
-.start-card h1 {
-
-    margin: 0;
-
-    font-size: 36px;
-
-    font-weight: 750;
-
-    color: #f9fafb;
-
-}
-
-
-.start-card h2 {
-
-    margin: 8px 0 20px;
-
-    font-size: 20px;
-
-    font-weight: 500;
-
-    color: #818cf8;
-
-}
-
-
-.start-card p {
-
-    margin: 10px auto;
-
-    max-width: 430px;
-
-    color: #9ca3af;
-
-    font-size: 15px;
-
-    line-height: 1.6;
-
-}
-
-
-#start-button {
-
-    margin-top: 22px;
-
-    padding: 13px 28px;
-
-    border: none;
-
-    border-radius: 12px;
-
-    background: #6366f1;
-
-    color: white;
-
-    font-size: 15px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-
-}
-
-
-#start-button:hover {
-
-    transform: translateY(-2px);
-
-    opacity: 0.9;
-
-}
-
-
-#start-button i {
-
-    margin-left: 7px;
-
-}
-
-
-@media (max-width: 600px) {
-
-    .start-card {
-
-        padding: 35px 25px;
-
-    }
-
-    .start-card h1 {
-
-        font-size: 30px;
-
-    }
-
-}
-
-/* =========================================
-   QUIZ
-========================================= */
-
-.quiz-container {
-
-    width: 100%;
-
-    max-width: 700px;
-
-    margin: auto;
-
-}
-
-
-.quiz-header-info {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 8px;
-
-    color: #9ca3af;
-
-    font-size: 12px;
-
-}
-
-
-.quiz-header-info strong {
-
-    color: #818cf8;
-
-}
-
-
-.quiz-progress {
-
-    width: 100%;
-
-    height: 6px;
-
-    margin-bottom: 28px;
-
-    overflow: hidden;
-
-    border-radius: 10px;
-
-    background: #252b36;
-
-}
-
-
-.quiz-progress-bar {
-
-    height: 100%;
-
-    border-radius: 10px;
-
-    background: #6366f1;
-
-    transition: width 0.4s ease;
-
-}
-
-
-.quiz-question {
-
-    margin-bottom: 25px;
-
-    padding: 28px;
-
-    border-radius: 16px;
-
-    background: #181d27;
-
-    border: 1px solid #272d3a;
-
-    color: #f3f4f6;
-
-    font-size: 18px;
-
-    line-height: 1.6;
-
-    text-align: center;
-
-}
-
-
-.quiz-buttons {
-
-    display: flex;
-
-    gap: 12px;
-
-}
-
-
-.quiz-answer {
-
-    flex: 1;
-
-    padding: 15px;
-
-    border: 1px solid #343b49;
-
-    border-radius: 12px;
-
-    background: #202532;
-
-    color: #f3f4f6;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-
-}
-
-
-.quiz-answer:hover {
-
-    transform: translateY(-2px);
-
-    border-color: #6366f1;
-
-    background: #2b3040;
-
-}
-
-
-.quiz-answer:disabled {
-
-    cursor: default;
-
-    opacity: 0.6;
-
-}
-
-
-@media (max-width: 600px) {
-
-    .quiz-buttons {
-
-        flex-direction: column;
-
-    }
-
-    .quiz-question {
-
-        font-size: 16px;
-
-        padding: 20px;
-
-    }
-
-}
-
-/* =========================================
-   DIÁLOGO FINALIZADO
-========================================= */
-
-.dialogue-finished {
-    width: 100%;
-    max-width: 520px;
-    margin: 30px auto;
-    padding: 32px 28px;
-
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 18px;
-
-    text-align: center;
-
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.06);
-
-    animation: dialogueFinishedIn 0.35s ease;
-}
-
-
-/* ÍCONE */
-
-.dialogue-finished-icon {
-    width: 58px;
-    height: 58px;
-
-    margin: 0 auto 18px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #dcfce7;
-    color: #16a34a;
-
-    font-size: 28px;
-    font-weight: 700;
-}
-
-
-/* TÍTULO */
-
-.dialogue-finished h3 {
-    margin: 0 0 12px;
-
-    color: #111827;
-
-    font-size: 20px;
-    font-weight: 700;
-}
-
-
-/* TEXTOS */
-
-.dialogue-finished p {
-    margin: 8px 0;
-
-    color: #6b7280;
-
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-.dialogue-finished strong {
-    color: #374151;
-}
-
-
-/* BOTÃO */
-
-.dialogue-finished button {
-    margin-top: 22px;
-
-    padding: 12px 20px;
-
-    border: none;
-    border-radius: 10px;
-
-    background: #6366f1;
-    color: #ffffff;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-
-/* HOVER */
-
-.dialogue-finished button:hover {
-    background: #4f46e5;
-
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 6px 15px rgba(99, 102, 241, 0.25);
-}
-
-
-/* CLIQUE */
-
-.dialogue-finished button:active {
-    transform: translateY(0);
-}
-
-
-/* BOTÃO ANA */
-
-.go-to-ana {
-    background: #10b981 !important;
-}
-
-.go-to-ana:hover {
-    background: #059669 !important;
-
-    box-shadow:
-        0 6px 15px rgba(16, 185, 129, 0.25) !important;
-}
-
-
-/* BOTÃO QUIZ */
-
-.go-to-quiz {
-    background: #6366f1 !important;
-}
-
-
-/* ANIMAÇÃO */
-
-@keyframes dialogueFinishedIn {
-
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-}
-
-
-/* =========================================
-   RESPONSIVO
-========================================= */
-
-@media (max-width: 600px) {
-
-    .dialogue-finished {
-
-        margin: 20px 10px;
-
-        padding: 26px 20px;
-
-    }
-
-    .dialogue-finished h3 {
-
-        font-size: 18px;
-
-    }
-
-}
-
-/* =========================================
+/* =========================================================
    CRÉDITOS
-========================================= */
+========================================================= */
 
 .credits-screen {
-
     position: fixed;
 
     inset: 0;
@@ -1595,30 +983,26 @@ body {
     display: none;
 
     align-items: center;
-
     justify-content: center;
 
-    z-index: 9999;
+    z-index: 10000;
 
     padding: 20px;
-
 }
-
 
 .credits-screen.active {
-
     display: flex;
-
 }
 
-
 .credits-card {
-
     width: 100%;
-
     max-width: 480px;
 
-    background: #ffffff;
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: white;
 
     border-radius: 24px;
 
@@ -1629,41 +1013,11 @@ body {
     box-shadow:
         0 25px 60px rgba(0, 0, 0, 0.25);
 
-    animation:
-        creditsAppear 0.3s ease;
-
+    animation: creditsAppear 0.3s ease;
 }
-
-
-@keyframes creditsAppear {
-
-    from {
-
-        opacity: 0;
-
-        transform:
-            translateY(20px)
-            scale(0.97);
-
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-
-    }
-
-}
-
 
 .credits-icon {
-
     width: 65px;
-
     height: 65px;
 
     margin: 0 auto 18px;
@@ -1671,9 +1025,7 @@ body {
     border-radius: 50%;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     background: #6366f1;
@@ -1681,23 +1033,17 @@ body {
     color: white;
 
     font-size: 27px;
-
 }
 
-
 .credits-card h2 {
-
     margin: 0 0 12px;
 
     font-size: 25px;
 
     color: #111827;
-
 }
 
-
 .credits-description {
-
     margin: 0 auto;
 
     max-width: 390px;
@@ -1707,47 +1053,32 @@ body {
     line-height: 1.6;
 
     font-size: 14px;
-
 }
 
-
 .credits-divider {
-
     width: 100%;
-
     height: 1px;
 
     background: #e5e7eb;
 
     margin: 25px 0;
-
 }
 
-
 .credits-info {
-
     display: flex;
-
     flex-direction: column;
 
     gap: 18px;
-
 }
 
-
 .credit-item {
-
     display: flex;
-
     flex-direction: column;
 
     gap: 4px;
-
 }
 
-
 .credit-label {
-
     font-size: 12px;
 
     color: #9ca3af;
@@ -1755,32 +1086,23 @@ body {
     text-transform: uppercase;
 
     letter-spacing: 0.5px;
-
 }
 
-
 .credit-item strong {
-
     color: #1f2937;
 
     font-size: 15px;
-
 }
 
-
 .credits-footer {
-
     color: #9ca3af;
 
     font-size: 12px;
 
     line-height: 1.5;
-
 }
 
-
 .credits-button {
-
     border: none;
 
     background: #6366f1;
@@ -1795,44 +1117,43 @@ body {
 
     cursor: pointer;
 
-    transition: 0.2s;
-
+    transition: 0.2s ease;
 }
 
-
 .credits-button:hover {
-
     transform: translateY(-1px);
 
     opacity: 0.9;
-
 }
-
 
 .credits-button i {
-
     margin-right: 6px;
+}
 
+.game-version {
+    margin-top: 16px;
+
+    font-size: 11px;
+
+    color: #94a3b8;
 }
 
 
-/* =========================================
-   BOTÃO ABRIR CRÉDITOS
-========================================= */
+/* =========================================================
+   BOTÃO CRÉDITOS
+========================================================= */
 
 .credits-open-button {
-
     position: fixed;
 
     bottom: 20px;
-
     left: 20px;
 
     z-index: 100;
 
     border: none;
 
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.94);
 
     color: #6366f1;
 
@@ -1847,253 +1168,521 @@ body {
     box-shadow:
         0 4px 15px rgba(0, 0, 0, 0.08);
 
-    transition: 0.2s;
-
+    transition: 0.2s ease;
 }
 
-
 .credits-open-button:hover {
-
     transform: translateY(-2px);
 
     box-shadow:
         0 6px 18px rgba(0, 0, 0, 0.12);
-
 }
-
 
 .credits-open-button i {
-
     margin-right: 5px;
-
 }
 
-/* =========================================
-   QUIZ
-========================================= */
 
-.quiz-container {
+/* =========================================================
+   TELA INICIAL
+========================================================= */
 
-    width: 560px;
-    max-width: 90%;
+.start-screen {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(99, 102, 241, 0.12),
+            transparent 45%
+        ),
+        #09090b;
+
+    overflow-y: auto;
+
+    transition:
+        opacity 0.4s ease,
+        visibility 0.4s ease;
+}
+
+.start-screen.hidden {
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+}
+
+.start-content {
+    width: 100%;
+    max-width: 760px;
 
     margin: auto;
 
-    padding: 34px 35px;
-
-    background: #191e29;
-
-    border: 1px solid #252c3a;
-
-    border-radius: 20px;
-
-    box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.25);
-
     text-align: center;
-
-    color: #ffffff;
-
 }
 
-
-/* =========================================
-   BADGE
-========================================= */
-
-.quiz-badge {
-
+.start-badge {
     display: inline-block;
 
-    padding: 6px 12px;
+    margin-bottom: 18px;
 
-    border-radius: 20px;
+    padding: 7px 14px;
 
-    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(255,255,255,0.12);
 
-    color: #6366f1;
+    border-radius: 999px;
 
-    font-size: 10px;
+    background: rgba(255,255,255,0.04);
 
-    font-weight: 700;
-
-    letter-spacing: 0.4px;
-
-    text-transform: uppercase;
-
-    margin-bottom: 14px;
-
-}
-
-
-/* =========================================
-   TÍTULO
-========================================= */
-
-.quiz-title {
-
-    margin: 0;
-
-    font-size: 25px;
-
-    font-weight: 700;
-
-    color: #ffffff;
-
-}
-
-
-/* =========================================
-   CONTADOR
-========================================= */
-
-.quiz-counter {
-
-    margin-top: 5px;
-
-    margin-bottom: 25px;
+    color: #a1a1aa;
 
     font-size: 12px;
 
-    color: #737b8c;
+    font-weight: 700;
 
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
 }
 
+.start-content h1 {
+    margin: 0;
 
-/* =========================================
-   FRASE
-========================================= */
+    font-size: clamp(38px, 7vw, 64px);
 
-.quiz-phrase {
+    font-weight: 800;
 
-    min-height: 95px;
+    color: #f4f4f5;
 
-    display: flex;
+    letter-spacing: -2px;
+}
 
-    align-items: center;
+.start-content h2 {
+    margin: 10px 0 30px;
 
-    justify-content: center;
+    color: #a1a1aa;
 
-    padding: 20px 25px;
+    font-size: 16px;
 
-    margin-bottom: 25px;
+    font-weight: 400;
+}
 
-    background: #202634;
+.lore-card {
+    padding: 28px;
 
-    border: 1px solid #293142;
+    border: 1px solid rgba(255,255,255,0.08);
 
-    border-radius: 14px;
+    border-radius: 18px;
 
-    color: #f1f3f7;
+    background: rgba(24,24,27,0.88);
+
+    text-align: left;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.35);
+}
+
+.lore-card h3 {
+    margin-bottom: 18px;
+
+    color: #f4f4f5;
+
+    font-size: 21px;
+}
+
+.lore-card p {
+    margin-bottom: 14px;
+
+    color: #a1a1aa;
 
     font-size: 15px;
 
-    line-height: 1.5;
-
-    font-weight: 500;
-
+    line-height: 1.7;
 }
 
-
-/* =========================================
-   BOTÕES
-========================================= */
-
-.quiz-buttons {
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 10px;
-
+.lore-card p:last-child {
+    margin-bottom: 0;
 }
 
+.lore-question {
+    color: #e4e4e7 !important;
 
-.quiz-answer {
+    font-weight: 600;
+}
 
-    height: 46px;
+.game-objective {
+    display: flex;
 
+    align-items: flex-start;
+
+    gap: 15px;
+
+    margin-top: 18px;
+
+    padding: 20px;
+
+    border: 1px solid rgba(99,102,241,0.2);
+
+    border-radius: 16px;
+
+    background: rgba(99,102,241,0.08);
+
+    text-align: left;
+}
+
+.objective-icon {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
-    gap: 8px;
+    flex-shrink: 0;
 
-    border-radius: 11px;
+    width: 42px;
+    height: 42px;
 
-    border: 1px solid #303849;
+    border-radius: 12px;
 
-    background: #202634;
+    background: rgba(99,102,241,0.15);
 
-    color: #dce1e9;
+    color: #818cf8;
+
+    font-size: 20px;
+}
+
+.game-objective strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #f4f4f5;
+}
+
+.game-objective p {
+    margin: 0;
+
+    color: #a1a1aa;
 
     font-size: 14px;
 
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        border 0.2s ease,
-        transform 0.15s ease;
-
+    line-height: 1.6;
 }
 
+.objective-text {
+    margin-top: 20px;
 
-.quiz-answer:hover {
+    color: #71717a;
 
-    background: #272e3d;
+    font-size: 13px;
 
-    border-color: #414b5f;
-
-    transform: translateY(-1px);
-
+    line-height: 1.6;
 }
 
+.objective-text p {
+    margin-bottom: 8px;
+}
 
-.quiz-answer i {
+.objective-text strong {
+    color: #a1a1aa;
+}
+
+.start-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-top: 18px;
+
+    padding: 14px 24px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #6366f1;
+
+    color: white;
 
     font-size: 15px;
 
-    color: #aeb6c5;
+    font-weight: 700;
 
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.start-button:hover {
+    background: #4f46e5;
+
+    transform: translateY(-2px);
+}
+
+.start-content > .credits-button {
+    display: block;
+
+    margin: 15px auto 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #71717a;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+.start-content > .credits-button:hover {
+    color: #a1a1aa;
 }
 
 
-.quiz-answer:disabled {
+/* =========================================================
+   CONFETES
+========================================================= */
 
-    cursor: default;
+.confetti-container {
+    position: fixed;
 
-    opacity: 0.6;
+    inset: 0;
 
-    transform: none;
+    pointer-events: none;
 
+    overflow: hidden;
+
+    z-index: 9999;
+}
+
+.confetti {
+    position: absolute;
+
+    width: 8px;
+    height: 14px;
+
+    top: -20px;
+
+    animation:
+        confettiFall linear forwards;
 }
 
 
-/* =========================================
-   RESPONSIVO
-========================================= */
+/* =========================================================
+   ANIMAÇÕES
+========================================================= */
 
-@media (max-width: 650px) {
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+@keyframes confettiFall {
+    to {
+        transform:
+            translateY(110vh)
+            rotate(720deg);
+
+        opacity: 0;
+    }
+}
+
+@keyframes dialogueFinishedIn {
+    from {
+        opacity: 0;
+
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+@keyframes resultAppear {
+    from {
+        opacity: 0;
+
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: scale(1);
+    }
+}
+
+@keyframes creditsAppear {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(20px)
+            scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        overflow: hidden;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .chat-header {
+        height: 64px;
+
+        padding: 0 12px;
+    }
+
+    .chat-user {
+        gap: 9px;
+    }
+
+    .chat-user .avatar {
+        width: 40px;
+        height: 40px;
+
+        font-size: 15px;
+    }
+
+    .chat-user h2 {
+        font-size: 15px;
+    }
+
+    .messages {
+        padding: 20px 15px;
+    }
+
+    .choices {
+        padding: 10px 15px 5px;
+    }
+
+    .bubble {
+        max-width: 80%;
+    }
+
+    .message-input-area {
+        height: auto;
+
+        min-height: 62px;
+
+        padding: 10px 12px;
+    }
+
+    .fake-input {
+        min-height: 40px;
+        height: 40px;
+    }
+
+    .credits-open-button {
+        bottom: 78px;
+
+        left: 12px;
+
+        padding: 8px 12px;
+
+        font-size: 12px;
+
+        z-index: 50;
+    }
 
     .quiz-container {
+    width: auto;
+    max-width: calc(100% - 30px);
+    padding: 25px 20px;
+}
 
-        width: auto;
+.quiz-buttons {
+    grid-template-columns: 1fr;
+}
 
+.quiz-phrase {
+    font-size: 14px;
+    padding: 18px;
+}
+
+    .dialogue-finished {
+        margin: 20px 10px;
+
+        padding: 26px 20px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE TELA INICIAL
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .start-screen {
+        padding: 18px;
+
+        align-items: flex-start;
+    }
+
+    .start-content {
+        padding-top: 20px;
+        padding-bottom: 30px;
+    }
+
+    .lore-card {
+        padding: 20px;
+    }
+
+    .start-content h1 {
+        font-size: 42px;
+    }
+
+    .game-objective {
+        padding: 16px;
+    }
+
+    .credits-card {
         padding: 25px 20px;
-
     }
-
-
-    .quiz-buttons {
-
-        grid-template-columns: 1fr;
-
-    }
-
 }

@@ -1,39 +1,19 @@
-/* =========================================
+/* =========================================================
+   ENTRE LINHAS
+   SE LIGA MOÇADA 2026
+========================================================= */
+
+
+/* =========================================================
+   CONFIGURAÇÃO
+========================================================= */
+
+const STORAGE_KEY = "jogoViolenciaDomestica";
+
+
+/* =========================================================
    ELEMENTOS
-========================================= */
-
-const creditsScreen =
-    document.getElementById("credits-screen");
-
-const creditsButton =
-    document.getElementById("credits-button");
-
-const closeCredits =
-    document.getElementById("close-credits");
-
-const messagesContainer =
-    document.getElementById("messages");
-
-const choicesContainer =
-    document.getElementById("choices");
-
-const conversationList =
-    document.querySelector(".conversation-list");
-
-const chatName =
-    document.querySelector(".chat-user h2");
-
-const chatStatus =
-    document.querySelector(".chat-user span");
-
-const chatAvatar =
-    document.querySelector(".chat-user .avatar");
-
-const restartButton =
-    document.getElementById("restart-button");
-
-const confettiContainer =
-    document.getElementById("confetti-container");
+========================================================= */
 
 const startScreen =
     document.getElementById("start-screen");
@@ -41,883 +21,1406 @@ const startScreen =
 const startButton =
     document.getElementById("start-button");
 
+const messagesContainer =
+    document.getElementById("messages");
 
-/* =========================================
-   STORAGE
-========================================= */
+const choicesContainer =
+    document.getElementById("choices");
 
-const STORAGE_KEY =
-    "jogoViolenciaDomestica_v3";
+const restartButton =
+    document.getElementById("restart-button");
+
+const creditsScreen =
+    document.getElementById("credits-screen");
+
+const creditsOpenButton =
+    document.getElementById("credits-open-button");
+
+const startCreditsButton =
+    document.getElementById("start-credits-button");
+
+const closeCredits =
+    document.getElementById("close-credits");
+
+const conversationElements =
+    document.querySelectorAll(".conversation");
+
+const searchInput =
+    document.getElementById("search-input");
+
+const chatName =
+    document.getElementById("chat-name");
+
+const chatAvatar =
+    document.getElementById("chat-avatar");
+
+const chatStatus =
+    document.getElementById("chat-status");
+
+const lucasPreview =
+    document.getElementById("lucas-preview");
+
+const anaPreview =
+    document.getElementById("ana-preview");
 
 
-/* =========================================
-   ESTADO INICIAL
-========================================= */
+/* =========================================================
+   ESTADO PADRÃO
+========================================================= */
 
-function createInitialState() {
+const defaultState = {
 
-    return {
+    started: false,
 
-        currentChat: "lucas",
+    currentChat: "lucas",
 
-        dialogueCompleted: {
+    lucasNode: 0,
+    anaNode: 0,
 
-            lucas: false,
+    lucasChoices: [],
+    anaChoices: [],
 
-            ana: false
+    lucasFinished: false,
+    anaFinished: false,
 
-        },
+    quizFinished: false,
+    quizScore: 0,
+    quizQuestion: 0
+};
 
-        chats: {
 
-            lucas: {
+/* =========================================================
+   CARREGAR ESTADO
+========================================================= */
 
-    messages: [
+function loadState() {
 
-        {
-            text: "Oi, amor.",
-            type: "received",
-            time: "21:42"
-        },
+    try {
 
-        {
-            text: "Oi ❤️",
-            type: "sent",
-            time: "21:43"
-        },
+        const saved =
+            localStorage.getItem(STORAGE_KEY);
 
-        {
-            text: "Chegou em casa?",
-            type: "received",
-            time: "21:44"
+        if (!saved) {
+
+            return {
+                ...defaultState,
+                lucasChoices: [],
+                anaChoices: []
+            };
         }
 
-    ],
+        const parsed =
+            JSON.parse(saved);
 
-    currentNode: "inicio",
+        return {
 
-    currentChoices: null,
+            ...defaultState,
+            ...parsed,
 
-    finished: false
+            lucasChoices:
+                Array.isArray(parsed.lucasChoices)
+                    ? parsed.lucasChoices
+                    : [],
 
-},
+            anaChoices:
+                Array.isArray(parsed.anaChoices)
+                    ? parsed.anaChoices
+                    : []
+        };
 
-            ana: {
+    } catch (error) {
 
-    messages: [
+        console.error(
+            "Erro ao carregar o jogo:",
+            error
+        );
 
-        {
-            text: "Oii!",
-            type: "received",
-            time: "20:08"
-        },
-
-        {
-            text: "Oi Ana ❤️",
-            type: "sent",
-            time: "20:09"
-        },
-
-        {
-            text: "Você tá bem?",
-            type: "received",
-            time: "20:12"
-        }
-
-    ],
-
-    currentNode: "inicio",
-
-    currentChoices: null,
-
-    finished: false
-
-},
-
-        },
-
-        quiz: {
-
-            current: 0,
-
-            score: 0,
-
-            finished: false
-
-        },
-
-        started: false
-
-    };
-
+        return {
+            ...defaultState,
+            lucasChoices: [],
+            anaChoices: []
+        };
+    }
 }
 
 
-let gameState =
-    createInitialState();
+/* =========================================================
+   ESTADO
+========================================================= */
+
+let gameState = loadState();
 
 
-/* =========================================
+/* =========================================================
    SALVAR
-========================================= */
+========================================================= */
 
-function saveGame() {
+function saveState() {
 
     localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify(gameState)
     );
-
 }
 
 
-/* =========================================
-   CARREGAR
-========================================= */
+/* =========================================================
+   DIÁLOGO DO LUCAS
+========================================================= */
 
-function loadGame() {
+const lucasDialogue = [
 
-    const saved =
-        localStorage.getItem(STORAGE_KEY);
+    {
+        sender: "received",
+        text: "Chegou em casa?",
+        time: "21:47",
+        choices: [
+            {
+                text: "Cheguei sim. Por quê?",
+                next: 1
+            },
+            {
+                text: "Ainda não, estou chegando.",
+                next: 1
+            },
+            {
+                text: "Cheguei. Estava conversando com o pessoal.",
+                next: 1
+            }
+        ]
+    },
 
-    if (!saved) {
+    {
+        sender: "received",
+        text: "Nada. Só queria saber. Você podia ter avisado quando saiu.",
+        time: "21:48",
+        choices: [
+            {
+                text: "Foi mal, acabei esquecendo.",
+                next: 2
+            },
+            {
+                text: "Eu não sabia que precisava avisar toda vez.",
+                next: 2
+            },
+            {
+                text: "Eu estava ocupada, Lucas.",
+                next: 2
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Não custa mandar uma mensagem. Eu fico preocupado quando você some.",
+        time: "21:49",
+        choices: [
+            {
+                text: "Entendi. Na próxima eu aviso.",
+                next: 3
+            },
+            {
+                text: "Você não precisa se preocupar tanto.",
+                next: 3
+            },
+            {
+                text: "Eu estava com minhas amigas, não aconteceu nada.",
+                next: 3
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "E quem estava com você?",
+        time: "21:50",
+        choices: [
+            {
+                text: "A Ana e o pessoal da faculdade.",
+                next: 4
+            },
+            {
+                text: "Só algumas pessoas.",
+                next: 4
+            },
+            {
+                text: "Por que você quer saber?",
+                next: 4
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Tinha algum menino junto?",
+        time: "21:51",
+        choices: [
+            {
+                text: "Tinha algumas pessoas, mas nada demais.",
+                next: 5
+            },
+            {
+                text: "Lucas, eu estava com meus amigos.",
+                next: 5
+            },
+            {
+                text: "Você está com ciúmes?",
+                next: 5
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Eu só acho estranho você ficar tão próxima de outros caras. Você sabe que eu não gosto.",
+        time: "21:52",
+        choices: [
+            {
+                text: "Eu entendo que você possa sentir ciúmes, mas não fiz nada.",
+                next: 6
+            },
+            {
+                text: "Tá bom. Vou tentar evitar.",
+                next: 6
+            },
+            {
+                text: "Você precisa confiar em mim.",
+                next: 6
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Me manda sua localização quando sair amanhã.",
+        time: "21:53",
+        choices: [
+            {
+                text: "Por quê?",
+                next: 7
+            },
+            {
+                text: "Tá, eu mando.",
+                next: 7
+            },
+            {
+                text: "Não acho necessário.",
+                next: 7
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Porque eu quero saber onde você está. Se a gente namora, não vejo problema nisso.",
+        time: "21:54",
+        choices: [
+            {
+                text: "Mas eu também preciso ter minha privacidade.",
+                next: 8
+            },
+            {
+                text: "Tudo bem, vou mandar.",
+                next: 8
+            },
+            {
+                text: "Acho que confiança não deveria depender disso.",
+                next: 8
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "E amanhã você vai sair com a Ana de novo?",
+        time: "21:55",
+        choices: [
+            {
+                text: "Sim. A gente combinou de estudar.",
+                next: 9
+            },
+            {
+                text: "Ainda não sei.",
+                next: 9
+            },
+            {
+                text: "Por que você pergunta?",
+                next: 9
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Não gosto muito dela. Depois que você começou a andar com ela, parece que tudo virou problema entre nós.",
+        time: "21:56",
+        choices: [
+            {
+                text: "Ela só tenta me ajudar quando eu preciso.",
+                next: 10
+            },
+            {
+                text: "Talvez seja melhor eu falar menos com ela.",
+                next: 10
+            },
+            {
+                text: "Você não precisa gostar dela.",
+                next: 10
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "E outra coisa... aquela roupa que você postou ontem. Não gostei.",
+        time: "21:57",
+        choices: [
+            {
+                text: "Era só uma roupa, Lucas.",
+                next: 11
+            },
+            {
+                text: "Desculpa. Eu não pensei que você fosse ficar incomodado.",
+                next: 11
+            },
+            {
+                text: "Eu gosto daquela roupa.",
+                next: 11
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Você sabe que chama atenção. Eu não quero minha namorada se exibindo por aí.",
+        time: "21:58",
+        choices: [
+            {
+                text: "Eu posso escolher minhas próprias roupas.",
+                next: 12
+            },
+            {
+                text: "Tá bom. Não vou usar mais.",
+                next: 12
+            },
+            {
+                text: "Não acho justo você decidir isso.",
+                next: 12
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Você sempre faz parecer que eu sou o errado. Eu só faço isso porque amo você.",
+        time: "21:59",
+        choices: [
+            {
+                text: "Eu sei que você gosta de mim, mas isso não torna tudo certo.",
+                next: 13
+            },
+            {
+                text: "Talvez eu esteja exagerando mesmo.",
+                next: 13
+            },
+            {
+                text: "Eu não quero discutir.",
+                next: 13
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Depois você reclama que eu fico nervoso. Se você colaborasse, seria tudo mais fácil.",
+        time: "22:00",
+        choices: [
+            {
+                text: "Eu não sou responsável pelo seu comportamento.",
+                next: 14
+            },
+            {
+                text: "Desculpa. Não quero te deixar nervoso.",
+                next: 14
+            },
+            {
+                text: "Vamos conversar quando estivermos mais tranquilos.",
+                next: 14
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Inclusive, lembra daquele dinheiro que você tinha guardado?",
+        time: "22:01",
+        choices: [
+            {
+                text: "Lembro. Por quê?",
+                next: 15
+            },
+            {
+                text: "Sim. O que aconteceu?",
+                next: 15
+            },
+            {
+                text: "Por que você quer saber?",
+                next: 15
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Eu estou precisando. Você podia me emprestar. Afinal, a gente está junto.",
+        time: "22:02",
+        choices: [
+            {
+                text: "Posso ajudar se eu puder, mas o dinheiro é meu.",
+                next: 16
+            },
+            {
+                text: "Tá bom. Quanto você precisa?",
+                next: 16
+            },
+            {
+                text: "Não acho certo você cobrar isso de mim.",
+                next: 16
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Se você realmente confiasse em mim, não ficaria fazendo tanta pergunta.",
+        time: "22:03",
+        choices: [
+            {
+                text: "Confiança não significa aceitar qualquer coisa.",
+                next: 17
+            },
+            {
+                text: "Tá bom, eu confio em você.",
+                next: 17
+            },
+            {
+                text: "Eu só quero entender.",
+                next: 17
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Às vezes eu penso que você não precisa mais de mim.",
+        time: "22:04",
+        choices: [
+            {
+                text: "Eu me importo com você, mas isso não significa abrir mão de mim.",
+                next: 18
+            },
+            {
+                text: "Claro que preciso de você.",
+                next: 18
+            },
+            {
+                text: "Não fala assim.",
+                next: 18
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Se você me deixar, eu não sei o que vou fazer. Você é a única pessoa que eu tenho.",
+        time: "22:05",
+        choices: [
+            {
+                text: "Isso não pode ser colocado como responsabilidade minha.",
+                next: 19
+            },
+            {
+                text: "Eu nunca vou te deixar.",
+                next: 19
+            },
+            {
+                text: "Lucas, você também precisa ter outras pessoas por perto.",
+                next: 19
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Esquece. Boa noite. Depois a gente conversa.",
+        time: "22:06",
+        choices: []
+    }
+
+];
+
+
+/* =========================================================
+   DIÁLOGO DA ANA
+========================================================= */
+
+const anaDialogue = [
+
+    {
+        sender: "received",
+        text: "Carol, você está bem?",
+        time: "20:12",
+        choices: [
+            {
+                text: "Estou. Por quê?",
+                next: 1
+            },
+            {
+                text: "Mais ou menos.",
+                next: 1
+            },
+            {
+                text: "Aconteceu alguma coisa?",
+                next: 1
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Você anda diferente ultimamente. Parece que está sempre preocupada em não deixar o Lucas bravo.",
+        time: "20:13",
+        choices: [
+            {
+                text: "Às vezes ele fica bravo mesmo.",
+                next: 2
+            },
+            {
+                text: "Eu só quero evitar discussão.",
+                next: 2
+            },
+            {
+                text: "Talvez seja impressão sua.",
+                next: 2
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Mas você sente que precisa pensar duas vezes antes de fazer alguma coisa por causa da reação dele?",
+        time: "20:14",
+        choices: [
+            {
+                text: "Às vezes.",
+                next: 3
+            },
+            {
+                text: "Sim, bastante.",
+                next: 3
+            },
+            {
+                text: "Nunca tinha pensado assim.",
+                next: 3
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "E aquela história de ele querer saber onde você está o tempo todo?",
+        time: "20:15",
+        choices: [
+            {
+                text: "Ele diz que é preocupação.",
+                next: 4
+            },
+            {
+                text: "Ele pede minha localização.",
+                next: 4
+            },
+            {
+                text: "Ele fica perguntando com quem estou.",
+                next: 4
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Preocupação é uma coisa. Controle é outra. Você consegue perceber a diferença?",
+        time: "20:16",
+        choices: [
+            {
+                text: "Acho que estou começando a perceber.",
+                next: 5
+            },
+            {
+                text: "Ainda não sei.",
+                next: 5
+            },
+            {
+                text: "Talvez eu tenha normalizado algumas coisas.",
+                next: 5
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "E não precisa parar de falar comigo para evitar problemas com ele, tá?",
+        time: "20:17",
+        choices: [
+            {
+                text: "Obrigada por falar isso.",
+                next: 6
+            },
+            {
+                text: "Eu estava com medo de você achar estranho.",
+                next: 6
+            },
+            {
+                text: "Eu sinto falta de conversar normalmente.",
+                next: 6
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Você não precisa escolher entre seus amigos e seu relacionamento.",
+        time: "20:18",
+        choices: [
+            {
+                text: "Eu acho que estava começando a me afastar de todo mundo.",
+                next: 7
+            },
+            {
+                text: "É verdade.",
+                next: 7
+            },
+            {
+                text: "Nunca tinha percebido isso.",
+                next: 7
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "E sobre suas roupas? Ele também comenta?",
+        time: "20:19",
+        choices: [
+            {
+                text: "Sim. Ele diz que algumas roupas chamam atenção.",
+                next: 8
+            },
+            {
+                text: "Às vezes ele fala que não gosta.",
+                next: 8
+            },
+            {
+                text: "Ele quer escolher algumas coisas.",
+                next: 8
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Carol, você percebe como essas coisas estão se acumulando?",
+        time: "20:20",
+        choices: [
+            {
+                text: "Agora estou percebendo.",
+                next: 9
+            },
+            {
+                text: "Sim. Acho que eu estava tentando justificar tudo.",
+                next: 9
+            },
+            {
+                text: "Estou começando a entender.",
+                next: 9
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Você não é responsável pelas escolhas e reações dele.",
+        time: "20:21",
+        choices: [
+            {
+                text: "Eu precisava ouvir isso.",
+                next: 10
+            },
+            {
+                text: "Eu sempre achei que precisava evitar deixá-lo bravo.",
+                next: 10
+            },
+            {
+                text: "Faz sentido.",
+                next: 10
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Um relacionamento saudável precisa ter respeito, confiança, liberdade e espaço para cada pessoa ser quem é.",
+        time: "20:22",
+        choices: [
+            {
+                text: "Eu quero começar a pensar mais nisso.",
+                next: 11
+            },
+            {
+                text: "Acho que eu estava confundindo cuidado com controle.",
+                next: 11
+            },
+            {
+                text: "Obrigada por não desistir de conversar comigo.",
+                next: 11
+            }
+        ]
+    },
+
+    {
+        sender: "received",
+        text: "Nunca vou te julgar por precisar de ajuda. Você não precisa passar por isso sozinha.",
+        time: "20:23",
+        choices: []
+    }
+
+];
+
+
+/* =========================================================
+   QUIZ
+========================================================= */
+
+const quizQuestions = [
+
+    {
+        question:
+            "Lucas querer saber onde Carol está o tempo todo é apenas uma demonstração de carinho?",
+
+        answer: false,
+
+        explanation:
+            "Não necessariamente. Quando a preocupação vira cobrança constante, monitoramento ou exigência de localização, pode ser um comportamento de controle."
+    },
+
+    {
+        question:
+            "Uma pessoa pode escolher suas próprias roupas sem precisar da autorização do parceiro?",
+
+        answer: true,
+
+        explanation:
+            "Sim. Cada pessoa deve ter autonomia sobre sua aparência e suas escolhas pessoais."
+    },
+
+    {
+        question:
+            "Evitar amigos para não deixar o parceiro com ciúmes pode ser um sinal de isolamento?",
+
+        answer: true,
+
+        explanation:
+            "Sim. O afastamento de amigos e familiares pode ser uma forma de isolamento dentro de uma relação abusiva."
+    },
+
+    {
+        question:
+            "Dizer 'eu faço isso porque amo você' torna automaticamente um comportamento de controle aceitável?",
+
+        answer: false,
+
+        explanation:
+            "Não. Uma justificativa de amor não transforma controle, manipulação ou desrespeito em comportamento saudável."
+    },
+
+    {
+        question:
+            "Cada pessoa continua tendo direito à privacidade mesmo estando em um relacionamento?",
+
+        answer: true,
+
+        explanation:
+            "Sim. Um relacionamento saudável envolve confiança, respeito e preservação da individualidade."
+    },
+
+    {
+        question:
+            "Carol é responsável por evitar que Lucas fique bravo?",
+
+        answer: false,
+
+        explanation:
+            "Não. Cada pessoa é responsável pelas próprias emoções e comportamentos. Carol não deve carregar a responsabilidade pelas reações de Lucas."
+    }
+
+];
+
+
+/* =========================================================
+   INICIALIZAÇÃO
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeGame
+);
+
+
+function initializeGame() {
+
+    setupEvents();
+
+    updateConversationPreviews();
+
+    updateActiveConversation();
+
+    if (gameState.started) {
+
+        hideStartScreen();
+
+        renderCurrentChat();
+
+    } else {
+
+        showStartScreen();
+
+        renderCurrentChat();
+    }
+}
+
+
+/* =========================================================
+   EVENTOS
+========================================================= */
+
+function setupEvents() {
+
+    if (startButton) {
+
+        startButton.addEventListener(
+            "click",
+            startGame
+        );
+    }
+
+    if (restartButton) {
+
+        restartButton.addEventListener(
+            "click",
+            restartGame
+        );
+    }
+
+    if (creditsOpenButton) {
+
+        creditsOpenButton.addEventListener(
+            "click",
+            openCredits
+        );
+    }
+
+    if (startCreditsButton) {
+
+        startCreditsButton.addEventListener(
+            "click",
+            openCredits
+        );
+    }
+
+    if (closeCredits) {
+
+        closeCredits.addEventListener(
+            "click",
+            closeCreditsScreen
+        );
+    }
+
+    if (creditsScreen) {
+
+        creditsScreen.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target ===
+                    creditsScreen
+                ) {
+
+                    closeCreditsScreen();
+                }
+            }
+        );
+    }
+
+    conversationElements.forEach(
+        conversation => {
+
+            conversation.addEventListener(
+                "click",
+                function () {
+
+                    const chat =
+                        conversation.dataset.chat;
+
+                    switchChat(chat);
+                }
+            );
+        }
+    );
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            filterConversations
+        );
+    }
+}
+
+
+/* =========================================================
+   COMEÇAR
+========================================================= */
+
+function startGame() {
+
+    gameState.started = true;
+
+    gameState.currentChat = "lucas";
+
+    saveState();
+
+    hideStartScreen();
+
+    updateActiveConversation();
+
+    renderCurrentChat();
+}
+
+
+/* =========================================================
+   TELA INICIAL
+========================================================= */
+
+function hideStartScreen() {
+
+    if (startScreen) {
+
+        startScreen.classList.add(
+            "hidden"
+        );
+    }
+}
+
+
+function showStartScreen() {
+
+    if (startScreen) {
+
+        startScreen.classList.remove(
+            "hidden"
+        );
+    }
+}
+
+
+/* =========================================================
+   TROCAR CONVERSA
+========================================================= */
+
+function switchChat(chat) {
+
+    if (!gameState.started) {
 
         return;
-
     }
 
-    try {
+    if (
+        chat !== "lucas" &&
+        chat !== "ana"
+    ) {
 
-        const parsed =
-            JSON.parse(saved);
-
-        const initial =
-            createInitialState();
-
-        gameState = {
-
-            ...initial,
-
-            ...parsed,
-
-            dialogueCompleted: {
-
-                ...initial.dialogueCompleted,
-
-                ...(parsed.dialogueCompleted || {})
-
-            },
-
-            chats: {
-
-                ...initial.chats,
-
-                ...(parsed.chats || {})
-
-            },
-
-            quiz: {
-
-                ...initial.quiz,
-
-                ...(parsed.quiz || {})
-
-            }
-
-        };
-
-    } catch {
-
-        gameState =
-            createInitialState();
-
+        return;
     }
 
+    gameState.currentChat = chat;
+
+    saveState();
+
+    updateActiveConversation();
+
+    renderCurrentChat();
 }
 
 
-/* =========================================
-   HORÁRIO
-========================================= */
+function updateActiveConversation() {
 
-/* =========================================
-   HORÁRIO DA CONVERSA
-========================================= */
+    conversationElements.forEach(
+        element => {
 
-let conversationMinutes = 21 * 60 + 44;
-
-function getTime() {
-
-    conversationMinutes++;
-
-    const hours =
-        Math.floor(conversationMinutes / 60) % 24;
-
-    const minutes =
-        conversationMinutes % 60;
-
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-
+            element.classList.toggle(
+                "active",
+                element.dataset.chat ===
+                gameState.currentChat
+            );
+        }
+    );
 }
 
 
-/* =========================================
-   RENDERIZAR MENSAGEM
-========================================= */
+/* =========================================================
+   RENDERIZAR CHAT ATUAL
+========================================================= */
 
-function renderMessage(
-    text,
-    type,
-    time
-) {
+function renderCurrentChat() {
 
-    const message =
-        document.createElement("div");
+    updateChatHeader();
 
-    message.className =
-        `message ${type}`;
+    clearMessages();
 
-    const bubble =
-        document.createElement("div");
+    choicesContainer.innerHTML = "";
 
-    bubble.className =
-        "bubble";
+    if (
+        gameState.currentChat ===
+        "lucas"
+    ) {
 
-    const p =
-        document.createElement("p");
+        renderLucas();
 
-    p.textContent =
-        text;
+    } else {
 
-    const messageTime =
-        document.createElement("span");
-
-    messageTime.className =
-        "message-time";
-
-    messageTime.textContent =
-        time;
-
-    if (type === "sent") {
-
-        messageTime.innerHTML +=
-            ' <i class="bi bi-check2-all"></i>';
-
+        renderAna();
     }
-
-    bubble.appendChild(p);
-
-    bubble.appendChild(messageTime);
-
-    message.appendChild(bubble);
-
-    messagesContainer.appendChild(message);
-
 }
 
 
-/* =========================================
-   CARREGAR CHAT
-========================================= */
+/* =========================================================
+   CABEÇALHO DO CHAT
+========================================================= */
 
-function loadChatMessages(chat) {
+function updateChatHeader() {
+
+    if (
+        gameState.currentChat ===
+        "lucas"
+    ) {
+
+        chatName.textContent =
+            "Lucas meu amor ❤";
+
+        chatAvatar.textContent =
+            "L";
+
+        chatAvatar.className =
+            "avatar avatar-lucas";
+
+        chatStatus.textContent =
+            "online";
+
+    } else {
+
+        chatName.textContent =
+            "Ana melhor amiga ❤";
+
+        chatAvatar.textContent =
+            "A";
+
+        chatAvatar.className =
+            "avatar avatar-friend";
+
+        chatStatus.textContent =
+            "online";
+    }
+}
+
+
+/* =========================================================
+   LIMPAR MENSAGENS
+========================================================= */
+
+function clearMessages() {
 
     messagesContainer.innerHTML = `
         <div class="date-divider">
             <span>Hoje</span>
         </div>
     `;
+}
 
-    const history =
-        gameState.chats[chat].messages;
 
-    history.forEach(message => {
+/* =========================================================
+   RENDERIZAR HISTÓRICO DO LUCAS
+========================================================= */
 
-        renderMessage(
-            message.text,
-            message.type,
-            message.time
+function renderLucas() {
+
+    const node =
+        Math.min(
+            gameState.lucasNode,
+            lucasDialogue.length
         );
 
-    });
-
-    scrollMessages();
-
-}
+    const choices =
+        gameState.lucasChoices || [];
 
 
-/* =========================================
-   SCROLL
-========================================= */
+    /*
+        Renderiza cada mensagem recebida
+        apenas uma vez.
 
-function scrollMessages() {
+        Depois dela, renderiza a resposta
+        escolhida pelo jogador.
+    */
 
-    setTimeout(() => {
-
-        messagesContainer.scrollTop =
-            messagesContainer.scrollHeight;
-
-    }, 50);
-
-}
-
-
-/* =========================================
-   ADICIONAR MENSAGEM
-========================================= */
-
-function addMessage(
-    chat,
-    text,
-    type
-) {
-
-    const time =
-        getTime();
-
-    gameState.chats[chat].messages.push({
-
-        text,
-        type,
-        time
-
-    });
-updateConversationPreview(chat);
-    if (
-        gameState.currentChat === chat
+    for (
+        let i = 0;
+        i < node;
+        i++
     ) {
 
-        renderMessage(
-            text,
-            type,
-            time
-        );
+        const dialogue =
+            lucasDialogue[i];
 
-        scrollMessages();
+        if (!dialogue) {
+            continue;
+        }
 
+        renderMessage(dialogue);
+
+
+        if (
+            choices[i] &&
+            choices[i].text
+        ) {
+
+            renderMessage({
+
+                sender: "sent",
+
+                text: choices[i].text,
+
+                time: dialogue.time
+            });
+        }
     }
 
-    saveGame();
 
+    /*
+        Se a conversa terminou,
+        mostra somente o final.
+    */
+
+    if (gameState.lucasFinished) {
+
+        renderLucasFinished();
+
+        return;
+    }
+
+
+    /*
+        Mostra a mensagem atual
+        e as escolhas.
+    */
+
+    const current =
+        lucasDialogue[node];
+
+    if (!current) {
+
+        finishLucas();
+
+        return;
+    }
+
+    renderMessage(current);
+
+    renderChoices(current);
+
+    scrollMessages();
 }
 
 
-/* =========================================
-   HISTÓRIA LUCAS
-========================================= */
-
-const lucasChoices = [
-
-    {
-
-        text: "Cheguei em casa.",
-
-        response:
-            "Finalmente. Eu já estava pensando que tinha acontecido alguma coisa.",
-
-        next: [
-
-            {
-
-                text: "O ônibus demorou.",
-
-                response:
-                    "Entendi. Só é estranho você conseguir ficar horas sem olhar o celular quando sabe que eu estou esperando.",
-
-                next: [
-
-                    {
-
-                        text: "Eu estava sem olhar o celular.",
-
-                        response:
-                            "Você sempre consegue uma explicação. Eu só queria que você percebesse o que certas coisas fazem comigo.",
-
-                        next: [
-
-                            {
-
-                                text: "Entendo.",
-
-                                response:
-                                    "É... deixa pra lá.",
-
-                                next: []
-
-                            },
-
-                            {
-
-                                text: "Você não precisa saber onde eu estou o tempo todo.",
-
-                                response:
-                                    "Eu sei. Mas se você realmente se importasse comigo, não faria eu precisar perguntar.",
-
-                                next: []
-
-                            }
-
-                        ]
-
-                    },
-
-                    {
-
-                        text: "Desculpa.",
-
-                        response:
-                            "Não precisa pedir desculpa. Só não faz de novo.",
-
-                        next: [
-
-                            {
-
-                                text: "Tá bom.",
-
-                                response:
-                                    "É só isso que eu queria.",
-
-                                next: []
-
-                            }
-
-                        ]
-
-                    }
-
-                ]
-
-            },
-
-            {
-
-                text: "Você estava preocupado?",
-
-                response:
-                    "Um pouco. Você não costuma demorar tanto.",
-
-                next: [
-
-                    {
-
-                        text: "Foi só hoje.",
-
-                        response:
-                            "Tá. Só não gosto de ficar sem saber.",
-
-                        next: []
-
-                    },
-
-                    {
-
-                        text: "Eu estava com minhas amigas.",
-
-                        response:
-                            "Ah... achei que você tinha saído com aquele pessoal de novo.",
-
-                        next: [
-
-                            {
-
-                                text: "E qual seria o problema?",
-
-                                response:
-                                    "Nenhum. Eu só não gosto muito daquele pessoal.",
-
-                                next: []
-
-                            },
-
-                            {
-
-                                text: "Não saí com eles.",
-
-                                response:
-                                    "Tá bom.",
-
-                                next: []
-
-                            }
-
-                        ]
-
-                    }
-
-                ]
-
-            }
-
-        ]
-
-    },
-
-    {
-
-        text: "Ainda estou fora.",
-
-        response:
-            "Fora onde?",
-
-        next: [
-
-            {
-
-                text: "Estou com umas amigas.",
-
-                response:
-                    "Você não tinha falado que ia sair.",
-
-                next: [
-
-                    {
-
-                        text: "Eu decidi de última hora.",
-
-                        response:
-                            "Eu não estou dizendo que você não pode sair. Estou dizendo que eu esperava que você tivesse consideração por mim.",
-
-                        next: [
-
-                            {
-
-                                text: "Mas eu posso sair com minhas amigas.",
-
-                                response:
-                                    "Eu nunca disse que você não podia. Você está começando a transformar tudo que eu falo em controle.",
-
-                                next: []
-
-                            },
-
-                            {
-
-                                text: "Desculpa, eu devia ter avisado.",
-
-                                response:
-                                    "É. Era só isso que eu queria.",
-
-                                next: []
-
-                            }
-
-                        ]
-
-                    }
-
-                ]
-
-            },
-
-            {
-
-                text: "Só saí para espairecer.",
-
-                response:
-                    "Você podia ter me chamado.",
-
-                next: [
-
-                    {
-
-                        text: "Eu queria ficar um pouco sozinha.",
-
-                        response:
-                            "Sozinha? Você está se afastando de mim e está chamando isso de precisar de espaço.",
-
-                        next: [
-
-                            {
-
-                                text: "Eu só precisava de um tempo.",
-
-                                response:
-                                    "Eu só espero que você não perceba tarde demais quem realmente estava do seu lado.",
-
-                                next: []
-
-                            }
-
-                        ]
-
-                    }
-
-                ]
-
-            }
-
-        ]
-
-    },
-
-    {
-
-        text: "Por quê?",
-
-        response:
-            "Porque eu quero saber onde você está.",
-
-        next: [
-
-            {
-
-                text: "Estou em casa agora.",
-
-                response:
-                    "Tá. Era só isso que eu queria saber.",
-
-                next: [
-
-                    {
-
-                        text: "Você ficou bravo comigo?",
-
-                        response:
-                            "Não. Só fiquei chateado.",
-
-                        next: [
-
-                            {
-
-                                text: "Por eu ter saído?",
-
-                                response:
-                                    "Por você não ter pensado em como eu ia me sentir.",
-
-                                next: []
-
-                            }
-
-                        ]
-
-                    }
-
-                ]
-
-            },
-
-            {
-
-                text: "Você está me interrogando?",
-
-                response:
-                    "Nossa. Agora perguntar onde você está virou interrogatório?",
-
-                next: [
-
-                    {
-
-                        text: "Não foi isso que eu quis dizer.",
-
-                        response:
-                            "Então não transforma tudo em problema.",
-
-                        next: [
-
-                            {
-
-                                text: "Tá.",
-
-                                response:
-                                    "Boa noite.",
-
-                                next: []
-
-                            }
-
-                        ]
-
-                    }
-
-                ]
-
-            }
-
-        ]
-
+/* =========================================================
+   RENDERIZAR HISTÓRICO DA ANA
+========================================================= */
+
+function renderAna() {
+
+    const node =
+        Math.min(
+            gameState.anaNode,
+            anaDialogue.length
+        );
+
+    const choices =
+        gameState.anaChoices || [];
+
+    for (
+        let i = 0;
+        i < node;
+        i++
+    ) {
+
+        const dialogue =
+            anaDialogue[i];
+
+        if (!dialogue) {
+            continue;
+        }
+
+        renderMessage(dialogue);
+
+        if (
+            choices[i] &&
+            choices[i].text
+        ) {
+
+            renderMessage({
+                sender: "sent",
+                text: choices[i].text,
+                time: dialogue.time
+            });
+
+        }
     }
 
-];
-
-
-/* =========================================
-   HISTÓRIA ANA
-========================================= */
-
-const anaChoices = [
-
-    {
-
-        text: "Tô sim.",
-
-        response:
-            "Tem certeza? Você parece meio distante ultimamente.",
-
-        next: [
-
-            {
-
-                text: "Só estou cansada.",
-
-                response:
-                    "Entendi. Mas você anda recusando vários rolês nossos.",
-
-                next: [
-
-                    {
-
-                        text: "Ando sem vontade.",
-
-                        response:
-                            "Você costumava gostar de sair com a gente.",
-
-                        next: []
-
-                    },
-
-                    {
-
-                        text: "O Lucas não gosta muito quando eu saio.",
-
-                        response:
-                            "Mas você gosta?",
-
-                        next: [
-
-                            {
-
-                                text: "Eu gostava.",
-
-                                response:
-                                    "Pedro... isso não parece muito normal.",
-
-                                next: []
-
-                            },
-
-                            {
-
-                                text: "Não sei mais.",
-
-                                response:
-                                    "Se um dia quiser conversar, eu estou aqui.",
-
-                                next: []
-
-                            }
-
-                        ]
-
-                    }
-
-                ]
-
-            },
-
-            {
-
-                text: "Por que você acha isso?",
-
-                response:
-                    "Porque você sempre olha o celular quando fala dele.",
-
-                next: [
-
-                    {
-
-                        text: "É impressão sua.",
-
-                        response:
-                            "Pode ser. Só queria saber se está tudo bem.",
-
-                        next: []
-
-                    }
-
-                ]
-
-            }
-
-        ]
-
-    },
-
-    {
-
-        text: "Na verdade, não muito.",
-
-        response:
-            "Aconteceu alguma coisa?",
-
-        next: [
-
-            {
-
-                text: "É complicado explicar.",
-
-                response:
-                    "Pode explicar do seu jeito. Eu vou te ouvir.",
-
-                next: [
-
-                    {
-
-                        text: "Às vezes eu sinto que preciso tomar cuidado com tudo que faço.",
-
-                        response:
-                            "Você não deveria precisar ter medo de fazer coisas normais.",
-
-                        next: []
-
-                    },
-
-                    {
-
-                        text: "Depois eu te conto.",
-
-                        response:
-                            "Tudo bem. Mas não precisa passar por nada sozinha, tá?",
-
-                        next: []
-
-                    }
-
-                ]
-
-            }
-
-        ]
-
+    if (gameState.anaFinished) {
+        renderAnaFinished();
+        return;
     }
 
-];
+    const current =
+        anaDialogue[node];
+
+    if (!current) {
+        finishAna();
+        return;
+    }
+
+    renderMessage(current);
+
+    /*
+        Se esta for a última mensagem da Ana,
+        não existem escolhas para o jogador.
+        Portanto, finalizamos a conversa automaticamente.
+    */
+
+    if (
+        !current.choices ||
+        current.choices.length === 0
+    ) {
+
+        setTimeout(
+            () => {
+                if (!gameState.anaFinished) {
+                    finishAna();
+                }
+            },
+            450
+        );
+
+        return;
+    }
+
+    renderChoices(current);
+
+    scrollMessages();
+}
 
 
-/* =========================================
-   RENDERIZAR ESCOLHAS
-========================================= */
+/* =========================================================
+   RENDER MENSAGEM
+========================================================= */
 
-function renderChoices(
-    choices,
-    chat
+function renderMessage(
+    message,
+    customText = null
 ) {
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+    wrapper.className =
+        `message ${message.sender}`;
+
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+    bubble.className =
+        "bubble";
+
+
+    const text =
+        document.createElement(
+            "p"
+        );
+
+    text.textContent =
+        customText !== null
+            ? customText
+            : message.text;
+
+
+    const time =
+        document.createElement(
+            "span"
+        );
+
+    time.className =
+        "message-time";
+
+    time.textContent =
+        message.time || "Agora";
+
+
+    bubble.appendChild(text);
+
+    bubble.appendChild(time);
+
+    wrapper.appendChild(bubble);
+
+    messagesContainer.appendChild(wrapper);
+}
+
+
+/* =========================================================
+   ESCOLHAS
+========================================================= */
+
+function renderChoices(dialogue) {
 
     choicesContainer.innerHTML = "";
 
+
     if (
-        !choices ||
-        choices.length === 0
+        !dialogue ||
+        !dialogue.choices ||
+        dialogue.choices.length === 0
     ) {
 
-        finishDialogue(chat);
-
         return;
-
     }
 
 
     const title =
-        document.createElement("p");
+        document.createElement(
+            "p"
+        );
 
     title.className =
         "choices-title";
@@ -928,1262 +1431,1180 @@ function renderChoices(
     choicesContainer.appendChild(title);
 
 
-    choices.forEach(choice => {
+    dialogue.choices.forEach(
+        choice => {
 
-        const button =
-            document.createElement("button");
-
-        button.className =
-            "choice-button";
-
-        button.type =
-            "button";
-
-        button.innerHTML = `
-            <span>${choice.text}</span>
-            <i class="bi bi-arrow-right"></i>
-        `;
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                chooseAnswer(
-                    choice,
-                    chat
+            const button =
+                document.createElement(
+                    "button"
                 );
 
-            }
-        );
+            button.type =
+                "button";
 
-        choicesContainer.appendChild(button);
+            button.className =
+                "choice-button";
 
-    });
 
+            const text =
+                document.createElement(
+                    "span"
+                );
+
+            text.textContent =
+                choice.text;
+
+
+            const icon =
+                document.createElement(
+                    "i"
+                );
+
+            icon.className =
+                "bi bi-chevron-right";
+
+
+            button.appendChild(text);
+
+            button.appendChild(icon);
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    handleChoice(choice);
+                }
+            );
+
+
+            choicesContainer.appendChild(
+                button
+            );
+        }
+    );
 }
 
 
-/* =========================================
-   ESCOLHER RESPOSTA
-========================================= */
+/* =========================================================
+   ESCOLHA
+========================================================= */
 
-function chooseAnswer(choice, chat) {
+function handleChoice(choice) {
 
-    document
-        .querySelectorAll(".choice-button")
-        .forEach(button => {
-            button.disabled = true;
+    disableChoices();
+
+    /* =====================================================
+       LUCAS
+    ===================================================== */
+
+    if (gameState.currentChat === "lucas") {
+
+        const currentNode =
+            gameState.lucasNode;
+
+        const currentDialogue =
+            lucasDialogue[currentNode];
+
+        if (!currentDialogue) {
+            return;
+        }
+
+        gameState.lucasChoices[currentNode] = {
+            text: choice.text,
+            next: choice.next
+        };
+
+        gameState.lucasNode =
+            choice.next;
+
+        saveState();
+
+        // Mostra a resposta do jogador
+        renderMessage({
+            sender: "sent",
+            text: choice.text,
+            time: currentDialogue.time
         });
-
-    // Salva a resposta escolhida
-    addMessage(
-        chat,
-        choice.text,
-        "sent"
-    );
-
-    // IMPORTANTE:
-    // salva quais são as próximas escolhas
-    gameState.chats[chat].currentChoices =
-        choice.next && choice.next.length
-            ? choice.next
-            : null;
-
-    saveGame();
-
-    setTimeout(() => {
-
-        addMessage(
-            chat,
-            choice.response,
-            "received"
-        );
 
         setTimeout(() => {
 
-            // Ainda existem escolhas
             if (
-                choice.next &&
-                choice.next.length
+                gameState.lucasNode >=
+                lucasDialogue.length
             ) {
 
-                gameState.chats[chat].currentChoices =
-                    choice.next;
+                finishLucas();
 
-                saveGame();
+            } else {
 
-                // Só renderiza se ainda estiver nessa conversa
+                const nextDialogue =
+                    lucasDialogue[
+                        gameState.lucasNode
+                    ];
+
+                renderMessage(
+                    nextDialogue
+                );
+
+                // Se for a última mensagem,
+                // finaliza a conversa
                 if (
-                    gameState.currentChat === chat
+                    !nextDialogue.choices ||
+                    nextDialogue.choices.length === 0
                 ) {
 
+                    setTimeout(() => {
+                        finishLucas();
+                    }, 450);
+
+                } else {
+
                     renderChoices(
-                        choice.next,
-                        chat
+                        nextDialogue
                     );
 
                 }
 
+                scrollMessages();
             }
 
-            // Não existem mais escolhas
-            else {
+        }, 450);
 
-                gameState.chats[chat].currentChoices =
-                    null;
+    }
 
-                gameState.chats[chat].finished =
-                    true;
+    /* =====================================================
+       ANA
+    ===================================================== */
 
-                gameState.dialogueCompleted[chat] =
-                    true;
+    else {
 
-                saveGame();
+        const currentNode =
+            gameState.anaNode;
 
-                finishDialogue(chat);
+        const currentDialogue =
+            anaDialogue[currentNode];
 
-            }
-
-        }, 500);
-
-    }, 1000);
-
-}
-
-
-/* =========================================
-   FINALIZAR DIÁLOGO
-========================================= */
-
-function finishDialogue(chat) {
-
-    gameState.chats[chat].finished = true;
-
-    gameState.chats[chat].currentChoices = null;
-
-    gameState.dialogueCompleted[chat] = true;
-
-    saveGame();
-
-
-    /* =====================================
-       FINAL DO LUCAS
-    ===================================== */
-
-    if (chat === "lucas") {
-
-        choicesContainer.innerHTML = `
-
-            <div class="dialogue-finished">
-
-                <div class="dialogue-finished-icon">
-                    ✓
-                </div>
-
-                <h3>
-                    Conversa com Lucas encerrada
-                </h3>
-
-                <p>
-                    Essa conversa chegou ao fim.
-                </p>
-
-                <p>
-                    Agora vá até a conversa com
-                    <strong>Ana</strong> para continuar a história.
-                </p>
-
-                <button
-                    class="go-to-ana"
-                    type="button"
-                >
-                    Conversar com Ana
-                    <i class="bi bi-arrow-right"></i>
-                </button>
-
-            </div>
-
-        `;
-
-
-        const button =
-            choicesContainer.querySelector(
-                ".go-to-ana"
-            );
-
-
-        if (button) {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    configureChat("ana");
-
-                }
-            );
-
+        if (!currentDialogue) {
+            return;
         }
 
-        return;
+        gameState.anaChoices[currentNode] = {
+            text: choice.text,
+            next: choice.next
+        };
 
-    }
+        gameState.anaNode =
+            choice.next;
 
+        saveState();
 
-    /* =====================================
-       FINAL DA ANA
-    ===================================== */
-
-    if (chat === "ana") {
-
-        choicesContainer.innerHTML = `
-
-            <div class="dialogue-finished">
-
-                <div class="dialogue-finished-icon">
-                    ✓
-                </div>
-
-                <h3>
-                    Diálogos concluídos
-                </h3>
-
-                <p>
-                    Você terminou as conversas
-                    com Lucas e Ana.
-                </p>
-
-                <p>
-                    Agora você pode continuar para
-                    a atividade de reflexão.
-                </p>
-
-                <button
-                    class="go-to-quiz"
-                    type="button"
-                >
-                    Iniciar atividade
-                    <i class="bi bi-arrow-right"></i>
-                </button>
-
-            </div>
-
-        `;
-
-
-        const button =
-            choicesContainer.querySelector(
-                ".go-to-quiz"
-            );
-
-
-        if (button) {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    startQuiz();
-
-                }
-            );
-
-        }
-
-    }
-
-}
-/* =========================================
-   CONFIGURAR CHAT
-========================================= */
-
-function configureChat(chat) {
-
-    gameState.currentChat = chat;
-
-    saveGame();
-
-
-    /* =====================================
-       DADOS DO CONTATO
-    ===================================== */
-
-    if (chat === "lucas") {
-
-        chatName.textContent = "Lucas";
-
-        chatAvatar.textContent = "L";
-
-        chatAvatar.style.background = "#6366f1";
-
-    }
-
-
-    if (chat === "ana") {
-
-        chatName.textContent = "Ana";
-
-        chatAvatar.textContent = "A";
-
-        chatAvatar.style.background = "#10b981";
-
-    }
-
-
-    /* =====================================
-       CONVERSA ATIVA
-    ===================================== */
-
-    document
-        .querySelectorAll(".conversation")
-        .forEach(item => {
-
-            item.classList.remove("active");
-
+        // Mostra a resposta do jogador
+        renderMessage({
+            sender: "sent",
+            text: choice.text,
+            time: currentDialogue.time
         });
 
+        setTimeout(() => {
 
-    const selected =
-        document.querySelector(
-            `[data-chat="${chat}"]`
-        );
+            if (
+                gameState.anaNode >=
+                anaDialogue.length
+            ) {
 
+                finishAna();
 
-    if (selected) {
+            } else {
 
-        selected.classList.add("active");
+                const nextDialogue =
+                    anaDialogue[
+                        gameState.anaNode
+                    ];
 
+                // Mostra a próxima mensagem da Ana
+                renderMessage(
+                    nextDialogue
+                );
+
+                /*
+                 * IMPORTANTE:
+                 * Se esta for a última mensagem,
+                 * não existem escolhas.
+                 * Então finalizamos a conversa
+                 * automaticamente.
+                 */
+                if (
+                    !nextDialogue.choices ||
+                    nextDialogue.choices.length === 0
+                ) {
+
+                    setTimeout(() => {
+
+                        if (
+                            !gameState.anaFinished
+                        ) {
+                            finishAna();
+                        }
+
+                    }, 450);
+
+                } else {
+
+                    renderChoices(
+                        nextDialogue
+                    );
+                }
+
+                scrollMessages();
+            }
+
+        }, 450);
     }
 
+    updateConversationPreviews();
+}
 
-    /* =====================================
-       CARREGAR MENSAGENS
-    ===================================== */
+/* =========================================================
+   DESABILITAR ESCOLHAS
+========================================================= */
 
-    loadChatMessages(chat);
+function disableChoices() {
 
+    const buttons =
+        choicesContainer.querySelectorAll(
+            ".choice-button"
+        );
 
-    const chatData =
-        gameState.chats[chat];
+    buttons.forEach(
+        button => {
 
-
-    /* =====================================
-       DIÁLOGO JÁ TERMINOU
-    ===================================== */
-
-if (chatData.finished) {
-
-    choicesContainer.innerHTML = `
-
-        <p class="choices-title">
-            Conversa concluída
-        </p>
-
-    `;
-
-    return;
-
+            button.disabled =
+                true;
+        }
+    );
 }
 
 
-    /* =====================================
-       RECUPERAR OPÇÕES
-    ===================================== */
+/* =========================================================
+   FINAL LUCAS
+========================================================= */
 
-    let choices =
-        chatData.currentChoices;
+function finishLucas() {
+
+    gameState.lucasFinished =
+        true;
+
+    saveState();
+
+    renderLucasFinished();
+
+    updateConversationPreviews();
+}
+
+
+/* =========================================================
+   CARD FINAL LUCAS
+========================================================= */
+
+function renderLucasFinished() {
+
+    choicesContainer.innerHTML = "";
 
 
     /*
-       Se ainda não existe um ponto salvo,
-       começa pela primeira escolha.
+        Não apagamos e recriamos o histórico
+        da conversa aqui.
+
+        O histórico já está na tela.
+        Isso também evita duplicação.
     */
 
-    if (!choices) {
 
-        choices =
-            chat === "lucas"
-                ? lucasChoices
-                : anaChoices;
+    const card =
+        document.createElement(
+            "div"
+        );
 
-        chatData.currentChoices =
-            choices;
-
-        saveGame();
-
-    }
+    card.className =
+        "dialogue-finished";
 
 
-    renderChoices(
-        choices,
-        chat
-    );
+    card.innerHTML = `
 
-}
+        <div class="dialogue-finished-icon">
+            <i class="bi bi-check-lg"></i>
+        </div>
+
+        <h3>
+            Conversa com Lucas finalizada
+        </h3>
+
+        <p>
+            Algumas atitudes podem parecer
+            preocupação ou ciúme, mas podem
+            esconder comportamentos de controle.
+        </p>
+
+        <p>
+            <strong>
+                Agora veja o que Ana percebeu.
+            </strong>
+        </p>
+
+        <button
+            class="go-to-ana"
+            type="button"
+        >
+            Conversar com Ana
+            <i class="bi bi-arrow-right"></i>
+        </button>
+    `;
 
 
-/* =========================================
-   TROCAR CHAT MANUALMENTE
-========================================= */
+    messagesContainer.appendChild(card);
 
-if (conversationList) {
 
-    conversationList.addEventListener(
+    const button =
+        card.querySelector(
+            ".go-to-ana"
+        );
+
+
+    button.addEventListener(
         "click",
-        event => {
+        () => {
 
-            const conversation =
-                event.target.closest(
-                    ".conversation"
-                );
-
-            if (!conversation) {
-
-                return;
-
-            }
-
-            configureChat(
-                conversation.dataset.chat
-            );
-
+            switchChat("ana");
         }
     );
 
+
+    scrollMessages();
 }
 
 
-/* =========================================
-   QUIZ
-========================================= */
+/* =========================================================
+   FINAL ANA
+========================================================= */
 
-const quizQuestions = [
+function finishAna() {
 
-    {
+    gameState.anaFinished = true;
 
-        phrase:
-            "“Me avisa quando chegar em casa. Fico preocupado e quero saber se você está bem.”",
+    saveState();
 
-        answer:
-            "cuidado",
+    renderAnaFinished();
 
-        explanation:
-            "Aqui existe preocupação com a segurança da pessoa, sem tentativa de impedir seus movimentos ou controlar suas escolhas."
+    updateConversationPreviews();
+}
 
-    },
 
-    {
+function renderAnaFinished() {
 
-        phrase:
-            "“Você não vai sair com suas amigas hoje. Eu não gosto delas.”",
+    choicesContainer.innerHTML = "";
 
-        answer:
-            "controle",
+    const existingCard =
+        messagesContainer.querySelector(
+            ".ana-finished-card"
+        );
 
-        explanation:
-            "A pessoa está tentando decidir com quem o parceiro pode ou não se relacionar."
-
-    },
-
-    {
-
-        phrase:
-            "“Se você chegar tarde, pelo menos me manda uma mensagem para eu saber que está tudo bem.”",
-
-        answer:
-            "cuidado",
-
-        explanation:
-            "O pedido está relacionado à segurança e não impede a pessoa de sair ou tomar suas próprias decisões."
-
-    },
-
-    {
-
-        phrase:
-            "“Quero a senha do seu celular. Se você não tem nada a esconder, não deveria ter problema.”",
-
-        answer:
-            "controle",
-
-        explanation:
-            "Exigir acesso ao celular ou senhas pode ser uma forma de controlar a privacidade da outra pessoa."
-
-    },
-
-    {
-
-        phrase:
-            "“Você parece triste ultimamente. Quer conversar? Estou aqui se precisar.”",
-
-        answer:
-            "cuidado",
-
-        explanation:
-            "A frase demonstra atenção e oferece apoio sem pressionar a pessoa."
-
-    },
-
-    {
-
-        phrase:
-            "“Não quero que você use essa roupa. Se me respeitasse, trocaria.”",
-
-        answer:
-            "controle",
-
-        explanation:
-            "A pessoa está tentando controlar a forma como o parceiro se veste usando pressão emocional."
-
-    },
-
-    {
-
-        phrase:
-            "“Você pode sair com suas amigas. Só me avisa quando chegar para eu ficar tranquilo.”",
-
-        answer:
-            "cuidado",
-
-        explanation:
-            "Existe preocupação, mas a pessoa continua tendo liberdade para sair e escolher suas companhias."
-
-    },
-
-    {
-
-        phrase:
-            "“Você precisa me mandar sua localização sempre que sair.”",
-
-        answer:
-            "controle",
-
-        explanation:
-            "Exigir localização constante pode ultrapassar a preocupação e se transformar em monitoramento e controle."
-
-    },
-
-    {
-
-        phrase:
-            "“Percebi que você não está bem. Quer que eu te acompanhe ou prefere ficar um pouco sozinha?”",
-
-        answer:
-            "cuidado",
-
-        explanation:
-            "A pessoa demonstra preocupação e respeita a autonomia do outro ao oferecer uma escolha."
-
-    },
-
-    {
-
-        phrase:
-            "“Se você for nessa festa, pode esquecer que eu existo.”",
-
-        answer:
-            "controle",
-
-        explanation:
-            "A ameaça emocional é utilizada para tentar impedir a pessoa de fazer algo que deseja."
-
+    if (existingCard) {
+        return;
     }
 
-];
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "dialogue-finished ana-finished-card";
+
+    card.innerHTML = `
+        <div class="dialogue-finished-icon">
+            <i class="fas fa-check"></i>
+        </div>
+
+        <h3>
+            Conversa finalizada
+        </h3>
+
+        <p>
+            Você chegou ao fim da conversa com Ana.
+        </p>
+
+        <p>
+            Agora vamos verificar o que você aprendeu
+            durante a experiência.
+        </p>
+
+        <button
+            class="go-to-quiz"
+            type="button"
+        >
+            <i class="fas fa-question-circle"></i>
+            Ir para o Quiz
+        </button>
+    `;
+
+    messagesContainer.appendChild(card);
+
+    const goToQuizButton =
+        card.querySelector(".go-to-quiz");
+
+    if (goToQuizButton) {
+        goToQuizButton.addEventListener(
+            "click",
+            startQuiz
+        );
+    }
+
+    scrollMessages();
+}
+/* =========================================================
+   CARD FINAL ANA
+========================================================= */
+
+function renderAnaFinished() {
+    choicesContainer.innerHTML = "";
+
+    // Evita criar o card mais de uma vez
+    const existingCard =
+        messagesContainer.querySelector(
+            ".ana-finished-card"
+        );
+
+    if (existingCard) {
+        return;
+    }
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "dialogue-finished ana-finished-card";
+
+    card.innerHTML = `
+        <div class="dialogue-finished-icon">
+            <i class="fas fa-check"></i>
+        </div>
+
+        <h3>
+            Conversa finalizada
+        </h3>
+
+        <p>
+            Você chegou ao fim da conversa com Ana.
+        </p>
+
+        <p>
+            Agora vamos verificar o que você aprendeu
+            durante a experiência.
+        </p>
+
+        <button
+            class="go-to-quiz"
+            type="button"
+        >
+            <i class="fas fa-question-circle"></i>
+            Ir para o Quiz
+        </button>
+    `;
+
+    messagesContainer.appendChild(card);
+
+    const goToQuizButton =
+        card.querySelector(".go-to-quiz");
+
+    goToQuizButton.addEventListener(
+        "click",
+        startQuiz
+    );
+
+    scrollMessages();
+}
 
 
-/* =========================================
-   INICIAR QUIZ
-========================================= */
+/* =========================================================
+   QUIZ
+========================================================= */
 
 function startQuiz() {
+
+    gameState.quizQuestion =
+        0;
+
+    gameState.quizScore =
+        0;
+
+    gameState.quizFinished =
+        false;
+
+    saveState();
+
+    renderQuiz();
+}
+
+
+/* =========================================================
+   RENDER QUIZ
+========================================================= */
+
+function renderQuiz() {
 
     choicesContainer.innerHTML = "";
 
     messagesContainer.innerHTML = "";
 
-    gameState.quiz.current = 0;
 
-    gameState.quiz.score = 0;
+    const questionIndex =
+        gameState.quizQuestion;
 
-    gameState.quiz.finished = false;
-
-    saveGame();
-
-    showQuizQuestion();
-
-}
-
-
-/* =========================================
-   MOSTRAR QUESTÃO
-========================================= */
-
-/* =========================================
-   MOSTRAR QUESTÃO
-========================================= */
-
-function showQuizQuestion() {
-
-    const index =
-        gameState.quiz.current;
 
     if (
-        index >= quizQuestions.length
+        questionIndex >=
+        quizQuestions.length
     ) {
 
         finishQuiz();
 
         return;
-
     }
 
 
     const question =
-        quizQuestions[index];
+        quizQuestions[
+            questionIndex
+        ];
 
 
     const container =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     container.className =
         "quiz-container";
 
 
+    const progress =
+        (
+            (questionIndex + 1) /
+            quizQuestions.length
+        ) * 100;
+
+
     container.innerHTML = `
 
         <div class="quiz-badge">
-            VAMOS TESTAR O QUE VOCÊ PERCEBEU
+            Você está no quiz
         </div>
-
 
         <h2 class="quiz-title">
-            Cuidado ou Controle?
+            Reconhecendo os sinais
         </h2>
 
-
         <div class="quiz-counter">
-            Frase ${index + 1} de ${quizQuestions.length}
+            Pergunta
+            ${questionIndex + 1}
+            de
+            ${quizQuestions.length}
         </div>
 
+        <div class="quiz-progress">
+
+            <div
+                class="quiz-progress-bar"
+                style="width: ${progress}%"
+            ></div>
+
+        </div>
 
         <div class="quiz-phrase">
-
-            "${question.phrase}"
-
+            ${escapeHTML(question.question)}
         </div>
-
 
         <div class="quiz-buttons">
 
             <button
                 class="quiz-answer"
-                data-answer="cuidado"
+                data-answer="true"
+                type="button"
             >
-
-                <i class="bi bi-heart"></i>
-
-                <span>
-                    Cuidado
-                </span>
-
+                <i class="bi bi-check-lg"></i>
+                Verdadeiro
             </button>
-
 
             <button
                 class="quiz-answer"
-                data-answer="controle"
+                data-answer="false"
+                type="button"
             >
-
-                <i class="bi bi-lock"></i>
-
-                <span>
-                    Controle
-                </span>
-
+                <i class="bi bi-x-lg"></i>
+                Falso
             </button>
 
         </div>
-
     `;
 
 
-    choicesContainer.innerHTML = "";
-
-    choicesContainer.appendChild(
+    messagesContainer.appendChild(
         container
     );
 
 
-    container
-        .querySelectorAll(".quiz-answer")
-        .forEach(button => {
+    const buttons =
+        container.querySelectorAll(
+            ".quiz-answer"
+        );
+
+
+    buttons.forEach(
+        button => {
 
             button.addEventListener(
                 "click",
                 () => {
 
-                    answerQuiz(
-                        button.dataset.answer
-                    );
+                    const answer =
+                        button.dataset.answer ===
+                        "true";
 
+                    answerQuiz(
+                        answer,
+                        question,
+                        buttons,
+                        container
+                    );
                 }
             );
+        }
+    );
 
-        });
 
+    scrollMessages();
 }
 
 
-/* =========================================
+/* =========================================================
    RESPONDER QUIZ
-========================================= */
+========================================================= */
 
 function answerQuiz(
-    selected
+    answer,
+    question,
+    buttons,
+    container
 ) {
 
-    const index =
-        gameState.quiz.current;
+    buttons.forEach(
+        button => {
 
-    const question =
-        quizQuestions[index];
-
-
-    const buttons =
-        document.querySelectorAll(
-            ".quiz-answer"
-        );
-
-
-    buttons.forEach(button => {
-
-        button.disabled = true;
-
-    });
+            button.disabled =
+                true;
+        }
+    );
 
 
     const correct =
-        selected === question.answer;
+        answer === question.answer;
 
 
     if (correct) {
 
-        gameState.quiz.score++;
-
-        showConfetti();
-
+        gameState.quizScore++;
     }
 
 
-    saveGame();
+    saveState();
 
 
     const result =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     result.className =
-        `quiz-result ${correct ? "correct" : "wrong"}`;
+        `quiz-result ${
+            correct
+                ? "correct"
+                : "wrong"
+        }`;
 
 
     result.innerHTML = `
 
         <h3>
-
             ${
                 correct
-                    ? "🎉 Acertou!"
-                    : "🤔 Quase!"
+                    ? "✓ Muito bem!"
+                    : "✕ Atenção!"
             }
-
         </h3>
 
-
         <p>
-
-            <strong>
-
-                Classificação correta:
-
-                ${
-                    question.answer === "cuidado"
-                        ? "Cuidado"
-                        : "Controle"
-                }
-
-            </strong>
-
+            ${escapeHTML(
+                question.explanation
+            )}
         </p>
-
-
-        <p>
-
-            ${question.explanation}
-
-        </p>
-
 
         <button
             class="next-question"
+            type="button"
         >
 
             ${
-                index === quizQuestions.length - 1
+                gameState.quizQuestion ===
+                quizQuestions.length - 1
                     ? "Ver resultado"
-                    : "Próxima situação"
+                    : "Próxima pergunta"
             }
 
-        </button>
+            <i class="bi bi-arrow-right"></i>
 
+        </button>
     `;
 
 
-    const quizContainer =
-        choicesContainer.querySelector(
-            ".quiz-container"
+    container.appendChild(result);
+
+
+    const nextButton =
+        result.querySelector(
+            ".next-question"
         );
 
 
-    quizContainer.appendChild(
-        result
+    nextButton.addEventListener(
+        "click",
+        () => {
+
+            gameState.quizQuestion++;
+
+            saveState();
+
+            renderQuiz();
+        }
     );
 
 
-    result
-        .querySelector(".next-question")
-        .addEventListener(
-            "click",
-            () => {
-
-                gameState.quiz.current++;
-
-                saveGame();
-
-                showQuizQuestion();
-
-            }
-        );
-
+    scrollMessages();
 }
 
 
-/* =========================================
-   CONFETES
-========================================= */
+/* =========================================================
+   FINAL DO QUIZ
+========================================================= */
 
-function showConfetti() {
+function finishQuiz() {
 
-    if (!confettiContainer) {
+    gameState.quizFinished =
+        true;
 
-        return;
+    saveState();
 
+
+    const total =
+        quizQuestions.length;
+
+    const score =
+        gameState.quizScore;
+
+
+    let title;
+    let message;
+
+
+    if (score === total) {
+
+        title =
+            "Excelente!";
+
+        message =
+            "Você conseguiu identificar muito bem os sinais apresentados durante a história.";
+
+    } else if (score >= 4) {
+
+        title =
+            "Muito bom!";
+
+        message =
+            "Você conseguiu reconhecer a maioria dos comportamentos apresentados.";
+
+    } else if (score >= 2) {
+
+        title =
+            "Bom começo!";
+
+        message =
+            "Alguns sinais podem ser difíceis de perceber. Continue aprendendo sobre relacionamentos saudáveis.";
+
+    } else {
+
+        title =
+            "Continue aprendendo";
+
+        message =
+            "Reconhecer comportamentos abusivos nem sempre é fácil. Conhecimento e informação ajudam a perceber esses sinais.";
     }
 
 
-    confettiContainer.innerHTML = "";
+    messagesContainer.innerHTML = "";
+
+    choicesContainer.innerHTML = "";
+
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+    card.className =
+        "score-card";
+
+
+    card.innerHTML = `
+
+        <div class="dialogue-finished-icon">
+
+            <i class="bi bi-trophy"></i>
+
+        </div>
+
+        <h2>
+            ${title}
+        </h2>
+
+        <div class="score-number">
+            ${score}/${total}
+        </div>
+
+        <p>
+            ${message}
+        </p>
+
+        <p>
+            A violência e o controle podem aparecer
+            de formas diferentes. Informação,
+            respeito e apoio são importantes.
+        </p>
+
+        <button
+            class="restart-quiz"
+            type="button"
+        >
+            Jogar novamente
+            <i class="bi bi-arrow-clockwise"></i>
+        </button>
+    `;
+
+
+    messagesContainer.appendChild(card);
+
+
+    const button =
+        card.querySelector(
+            ".restart-quiz"
+        );
+
+
+    button.addEventListener(
+        "click",
+        restartGame
+    );
+
+
+    createConfetti();
+
+    scrollMessages();
+}
+
+
+/* =========================================================
+   REINICIAR
+========================================================= */
+
+function restartGame() {
+
+    const confirmed =
+        window.confirm(
+            "Deseja realmente reiniciar a história?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+    }
+
+
+    localStorage.removeItem(
+        STORAGE_KEY
+    );
+
+
+    gameState = {
+
+        ...defaultState,
+
+        lucasChoices: [],
+
+        anaChoices: []
+    };
+
+
+    saveState();
+
+
+    updateActiveConversation();
+
+    updateConversationPreviews();
+
+    showStartScreen();
+
+    renderCurrentChat();
+}
+
+
+/* =========================================================
+   CRÉDITOS
+========================================================= */
+
+function openCredits() {
+
+    creditsScreen.classList.add(
+        "active"
+    );
+}
+
+
+function closeCreditsScreen() {
+
+    creditsScreen.classList.remove(
+        "active"
+    );
+}
+
+
+/* =========================================================
+   BUSCA DE CONVERSAS
+========================================================= */
+
+function filterConversations() {
+
+    const search =
+        searchInput.value
+            .toLowerCase()
+            .trim();
+
+
+    conversationElements.forEach(
+        conversation => {
+
+            const name =
+                conversation
+                    .querySelector("strong")
+                    .textContent
+                    .toLowerCase();
+
+
+            conversation.style.display =
+                name.includes(search)
+                    ? "flex"
+                    : "none";
+        }
+    );
+}
+
+
+/* =========================================================
+   PREVIEWS
+========================================================= */
+
+function updateConversationPreviews() {
+
+    /*
+        LUCAS
+    */
+
+    if (
+        gameState.lucasFinished
+    ) {
+
+        lucasPreview.textContent =
+            "Conversa finalizada";
+
+    } else {
+
+        const node =
+            Math.min(
+                gameState.lucasNode,
+                lucasDialogue.length - 1
+            );
+
+
+        lucasPreview.textContent =
+            lucasDialogue[node]?.text ||
+            "Chegou em casa?";
+    }
+
+
+    /*
+        ANA
+    */
+
+    if (
+        gameState.anaFinished
+    ) {
+
+        anaPreview.textContent =
+            "Conversa finalizada";
+
+    } else {
+
+        const node =
+            Math.min(
+                gameState.anaNode,
+                anaDialogue.length - 1
+            );
+
+
+        anaPreview.textContent =
+            anaDialogue[node]?.text ||
+            "Você está bem?";
+    }
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollMessages() {
+
+    setTimeout(
+        () => {
+
+            messagesContainer.scrollTop =
+                messagesContainer.scrollHeight;
+
+        },
+        50
+    );
+}
+
+
+/* =========================================================
+   CONFETES
+========================================================= */
+
+function createConfetti() {
+
+    const container =
+        document.getElementById(
+            "confetti-container"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = "";
 
 
     for (
         let i = 0;
-        i < 80;
+        i < 90;
         i++
     ) {
 
         const piece =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         piece.className =
             "confetti";
 
 
         piece.style.left =
-            Math.random() * 100 + "%";
-
-
-        piece.style.background =
-            [
-
-                "#6366f1",
-                "#22c55e",
-                "#facc15",
-                "#ef4444",
-                "#06b6d4",
-                "#ec4899"
-
-            ][
-                Math.floor(
-                    Math.random() * 6
-                )
-            ];
+            `${Math.random() * 100}%`;
 
 
         piece.style.animationDuration =
-            (2 + Math.random() * 2) + "s";
+            `${2 + Math.random() * 3}s`;
 
 
         piece.style.animationDelay =
-            Math.random() * .4 + "s";
+            `${Math.random() * 0.8}s`;
 
 
         piece.style.transform =
             `rotate(${Math.random() * 360}deg)`;
 
 
-        confettiContainer
-            .appendChild(piece);
+        piece.style.background =
+            getRandomConfettiColor();
 
+
+        container.appendChild(
+            piece
+        );
     }
 
 
-    setTimeout(() => {
+    setTimeout(
+        () => {
 
-        confettiContainer.innerHTML = "";
+            container.innerHTML = "";
 
-    }, 4500);
-
+        },
+        6000
+    );
 }
 
 
-/* =========================================
-   RESULTADO FINAL
-========================================= */
+function getRandomConfettiColor() {
 
-function finishQuiz() {
+    const colors = [
 
-    gameState.quiz.finished =
-        true;
+        "#6366f1",
+        "#818cf8",
+        "#22c55e",
+        "#10b981",
+        "#facc15",
+        "#f97316",
+        "#ec4899"
 
-    saveGame();
+    ];
 
 
-    const score =
-        gameState.quiz.score;
+    return colors[
+        Math.floor(
+            Math.random() *
+            colors.length
+        )
+    ];
+}
 
-    const total =
-        quizQuestions.length;
 
-    const percentage =
-        Math.round(
-            (score / total) * 100
+/* =========================================================
+   SEGURANÇA DO TEXTO DO QUIZ
+========================================================= */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement(
+            "div"
         );
 
 
-    let message;
+    div.textContent =
+        text;
 
 
-    if (percentage >= 80) {
-
-        message =
-            "Você demonstrou uma boa capacidade de identificar situações de cuidado e controle.";
-
-    } else if (percentage >= 50) {
-
-        message =
-            "Você conseguiu identificar parte das situações. Algumas formas de controle podem ser bastante sutis.";
-
-    } else {
-
-        message =
-            "Algumas situações podem ser difíceis de identificar. Observe como preocupação e controle podem se parecer, mas possuem diferenças importantes.";
-
-    }
-
-
-    choicesContainer.innerHTML = `
-
-        <div class="score-card">
-
-            <h2>
-                Resultado
-            </h2>
-
-
-            <div class="score-number">
-
-                ${score}/${total}
-
-            </div>
-
-
-            <p>
-
-                Você acertou
-
-                <strong>
-                    ${percentage}%
-                </strong>
-
-                das situações.
-
-            </p>
-
-
-            <p>
-
-                ${message}
-
-            </p>
-
-
-            <hr>
-
-
-            <h4>
-                Você não está sozinha.
-            </h4>
-
-
-            <p>
-
-                Reconhecer comportamentos de controle,
-                isolamento, ameaças e outras formas de
-                violência é um passo importante para
-                buscar ajuda e proteção.
-
-            </p>
-
-
-            <p>
-
-                Se você ou alguém que conhece estiver
-                passando por uma situação de violência
-                contra a mulher, procure ajuda.
-
-            </p>
-
-
-            <p>
-
-                <strong>
-                    Ligue 180 — Central de Atendimento à Mulher.
-                </strong>
-
-            </p>
-
-
-            <button
-                class="restart-quiz"
-                id="restart-quiz"
-            >
-
-                Refazer atividade
-
-            </button>
-
-        </div>
-
-    `;
-
-
-    document
-        .getElementById("restart-quiz")
-        .addEventListener(
-            "click",
-            () => {
-
-                gameState.quiz = {
-
-                    current: 0,
-
-                    score: 0,
-
-                    finished: false
-
-                };
-
-                saveGame();
-
-                showQuizQuestion();
-
-            }
-        );
-
-}
-
-function updateConversationPreview(chat) {
-
-    const conversation =
-        document.querySelector(
-            `[data-chat="${chat}"]`
-        );
-
-    if (!conversation) return;
-
-    const messages =
-        gameState.chats[chat].messages;
-
-    if (!messages.length) return;
-
-    const lastMessage =
-        messages[messages.length - 1];
-
-    const preview =
-        conversation.querySelector(".conversation-info p");
-
-    const time =
-        conversation.querySelector(".conversation-top small");
-
-    if (preview) {
-        preview.textContent =
-            lastMessage.text;
-    }
-
-    if (time) {
-        time.textContent =
-            lastMessage.time;
-    }
-
-}
-
-/* =========================================
-   REINICIAR JOGO COMPLETO
-========================================= */
-
-if (restartButton) {
-
-    restartButton.addEventListener(
-        "click",
-        () => {
-
-            const confirmed =
-                confirm(
-                    "Tem certeza que deseja reiniciar o jogo?\n\nTodo o progresso será perdido."
-                );
-
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-
-            localStorage.removeItem(
-                STORAGE_KEY
-            );
-
-
-            gameState =
-                createInitialState();
-
-
-            location.reload();
-
-        }
-    );
-
-}
-
-
-/* =========================================
-   TELA INICIAL
-========================================= */
-
-if (startButton) {
-
-    startButton.addEventListener(
-        "click",
-        () => {
-
-            gameState.started =
-                true;
-
-            saveGame();
-
-
-            if (startScreen) {
-
-                startScreen.style.opacity =
-                    "0";
-
-                startScreen.style.transition =
-                    "opacity 0.4s ease";
-
-
-                setTimeout(() => {
-
-                    startScreen.style.display =
-                        "none";
-
-
-                    configureChat(
-                        "lucas"
-                    );
-
-                }, 400);
-
-            } else {
-
-                configureChat(
-                    "lucas"
-                );
-
-            }
-
-        }
-    );
-
-}
-
-/* =========================================
-   CRÉDITOS
-========================================= */
-
-if (creditsButton) {
-
-    creditsButton.addEventListener(
-        "click",
-        () => {
-
-            creditsScreen.classList.add(
-                "active"
-            );
-
-        }
-    );
-
-}
-
-
-if (closeCredits) {
-
-    closeCredits.addEventListener(
-        "click",
-        () => {
-
-            creditsScreen.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-}
-
-/* =========================================
-   INICIALIZAÇÃO
-========================================= */
-
-loadGame();
-
-
-/*
- * IMPORTANTE:
- * Não iniciamos o chat automaticamente aqui.
- *
- * A tela inicial controla o começo do jogo.
- */
-
-if (
-    gameState.started &&
-    startScreen
-) {
-
-    startScreen.style.display =
-        "none";
-
-    configureChat(
-        gameState.currentChat || "lucas"
-    );
-
+    return div.innerHTML;
 }
