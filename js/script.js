@@ -904,37 +904,51 @@ function initializeGame() {
 
 function setupEvents() {
 
-    if (startButton) {
+    /* =====================================================
+       BOTÃO INICIAR
+    ===================================================== */
 
+    if (startButton) {
         startButton.addEventListener(
             "click",
             startGame
         );
     }
 
-    if (restartButton) {
 
+    /* =====================================================
+       REINICIAR
+    ===================================================== */
+
+    if (restartButton) {
         restartButton.addEventListener(
             "click",
             restartGame
         );
     }
 
-    if (creditsOpenButton) {
 
-        creditsOpenButton.addEventListener(
+    /* =====================================================
+       CRÉDITOS
+    ===================================================== */
+
+    const creditsButtons = document.querySelectorAll(
+        "#credits-open-button, #start-credits-button, #credits-button"
+    );
+
+    creditsButtons.forEach(button => {
+
+        button.addEventListener(
             "click",
             openCredits
         );
-    }
 
-    if (startCreditsButton) {
+    });
 
-        startCreditsButton.addEventListener(
-            "click",
-            openCredits
-        );
-    }
+
+    /* =====================================================
+       FECHAR CRÉDITOS
+    ===================================================== */
 
     if (closeCredits) {
 
@@ -942,7 +956,13 @@ function setupEvents() {
             "click",
             closeCreditsScreen
         );
+
     }
+
+
+    /* =====================================================
+       FECHAR CLICANDO FORA DA JANELA
+    ===================================================== */
 
     if (creditsScreen) {
 
@@ -951,15 +971,20 @@ function setupEvents() {
             function (event) {
 
                 if (
-                    event.target ===
-                    creditsScreen
+                    event.target === creditsScreen
                 ) {
-
                     closeCreditsScreen();
                 }
+
             }
         );
+
     }
+
+
+    /* =====================================================
+       CONVERSAS
+    ===================================================== */
 
     conversationElements.forEach(
         conversation => {
@@ -972,10 +997,17 @@ function setupEvents() {
                         conversation.dataset.chat;
 
                     switchChat(chat);
+
                 }
             );
+
         }
     );
+
+
+    /* =====================================================
+       BUSCA
+    ===================================================== */
 
     if (searchInput) {
 
@@ -983,7 +1015,9 @@ function setupEvents() {
             "input",
             filterConversations
         );
+
     }
+
 }
 
 
@@ -2369,19 +2403,44 @@ function restartGame() {
    CRÉDITOS
 ========================================================= */
 
-function openCredits() {
+/* =========================================================
+   CRÉDITOS
+========================================================= */
 
-    creditsScreen.classList.add(
-        "active"
-    );
+/* =========================================================
+   CRÉDITOS
+========================================================= */
+
+function openCredits(event) {
+
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    if (!creditsScreen) {
+        console.error(
+            "Tela de créditos não encontrada."
+        );
+        return;
+    }
+
+    creditsScreen.classList.add("active");
 }
 
 
-function closeCreditsScreen() {
+function closeCreditsScreen(event) {
 
-    creditsScreen.classList.remove(
-        "active"
-    );
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    if (!creditsScreen) {
+        return;
+    }
+
+    creditsScreen.classList.remove("active");
 }
 
 
