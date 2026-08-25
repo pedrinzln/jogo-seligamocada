@@ -1,11 +1,11 @@
-# 💜 Se Liga, Moça!
+# 💜 Se Liga, Moçada!
 
 > Um jogo educativo e interativo sobre violência doméstica e relacionamentos abusivos.
 
 ## 🎮 Sobre o projeto
 
-**Se Liga, Moça!** é um jogo educativo desenvolvido com o objetivo de conscientizar os jogadores sobre situações de violência doméstica, relacionamentos abusivos e comportamentos que podem passar despercebidos no dia a dia.
-
+**Entre linhas** é um jogo educativo desenvolvido com o objetivo de conscientizar os jogadores sobre situações de violência doméstica, relacionamentos abusivos e comportamentos que podem passar despercebidos no dia a dia.
+Foi desenvolvido para participar de um concurso chamado "Se liga, moçada!" do CIEE.
 Por meio de uma experiência baseada em conversas e escolhas, o jogador acompanha diferentes situações e precisa identificar comportamentos problemáticos e refletir sobre possíveis formas de agir.
 
 ## 🕹️ Como jogar
@@ -14,7 +14,7 @@ O jogo funciona diretamente pelo navegador.
 
 Você pode acessar a versão online através do **GitHub Pages**:
 
-👉 [Jogar Se Liga, Moça!](https://pedrinzln.github.io/jogo-seligamocada/)
+👉 [Jogar Entre linhas!](https://pedrinzln.github.io/jogo-seligamocada/)
 
 ## 🧩 Funcionalidades
 
